@@ -23,7 +23,7 @@ CORS(app, origins=['http://127.0.0.1:5000', 'http://localhost:5000'])
 # Gemini Multi-Model
 GEMINI_KEY = os.environ.get('GEMINI_API_KEY')
 gemini_client = None
-GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-flash-latest']
+GEMINI_MODELS = ['gemini-1.5-flash-latest', 'gemini-2.0-flash-exp', 'gemini-1.5-pro-latest', 'gemini-pro']
 
 if GEMINI_KEY:
     try:
