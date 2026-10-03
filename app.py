@@ -867,17 +867,17 @@ Answer in Roman Urdu:"""
     return jsonify({'response': keyword_ai(msg), 'source': 'keyword'})
 
 
+# 🎯 init_db() ALWAYS run karein (Railway + Local dono ke liye)
+init_db()
+print("✅ Database initialized")
+
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
     print("=" * 60)
-    print("   🛡️  QUESTIAN ACADEMY - Backend")
+    print("   QUESTIAN ACADEMY - Backend")
     print("   Developer: Abdul Qadir Soomro")
     print("=" * 60)
-    init_db()
-    print("✅ Database ready!")
     print(f"🤖 Gemini: {'✅ Active' if gemini_client else '⚠️ Keyword AI only'}")
-    print("🚀 Server: http://127.0.0.1:5000")
+    print(f"🚀 Server: http://0.0.0.0:{port}")
     print("=" * 60)
-    if __name__ == '__main__':
-         init_db()
-    port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
