@@ -3,7 +3,7 @@
 //   Developer: Abdul Qadir Soomro
 // ============================================
 
-const API_URL = '/api';
+const API_URL = '';
 let currentUser = null;
 try { const s = localStorage.getItem('currentUser'); if (s) currentUser = JSON.parse(s); } catch(e) { localStorage.removeItem('currentUser'); }
 
@@ -761,3 +761,22 @@ window.addEventListener('load', function() {
 document.addEventListener('click', function() {
     if (!voicesLoaded) loadVoices();
 }, { once: true });
+// 🎯 SIMPLE AI FIX
+window.sendAIMessage = async function() {
+    const input = document.getElementById('ai-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    addAI('user', msg);
+    input.value = '';
+    try {
+        const r = await fetch('/api/ai', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: msg})
+        });
+        const d = await r.json();
+        addAI('bot', d.response || 'Reply nahi mila');
+    } catch(err) {
+        addAI('bot', 'Server error');
+    }
+};
