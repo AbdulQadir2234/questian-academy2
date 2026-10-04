@@ -277,10 +277,21 @@ def validate_username(username):
 @app.before_request
 def security_check():
     ip = get_client_ip()
-    if ip in ['127.0.0.1', 'localhost', '::1', 'unknown', None]:
+    
+    # 🎯 SAFE IPs whitelist - kabhi block nahi honge
+    safe_ips = ['127.0.0.1', 'localhost', '::1', 'unknown', None, '']
+    if ip in safe_ips:
         return None
+    
+    # 🎯 Railway/Cloudflare/Docker internal IPs whitelist
+    if ip.startswith('10.') or ip.startswith('172.') or ip.startswith('192.168.') or ip.startswith('100.') or ip.startswith('35.'):
+        return None
+    
+    # 🎯 Blocked IP check (sirf external IPs)
     if is_ip_blocked(ip):
         return jsonify({'success': False, 'message': 'IP blocked.'}), 403
+    
+    # 🎯 Sirf external POST/PUT mein suspicious patterns check karein
     if request.method in ['POST', 'PUT']:
         try:
             data = request.get_json(silent=True)
@@ -292,8 +303,8 @@ def security_check():
                         break
                 if detected:
                     log_attack(ip, "MALICIOUS_INPUT", f"Pattern: {detected}", request.path, 'HIGH')
-                    block_ip(ip, f"Malicious input")
-                    return jsonify({'success': False, 'message': '⚠️ Suspicious activity!'}), 403
+                    # block_ip(ip, f"Malicious input")  # Blocking disabled for demo
+                    return jsonify({'success': False, 'message': 'Suspicious input detected'}), 400
         except:
             pass
 
