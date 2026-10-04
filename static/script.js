@@ -3,7 +3,7 @@
 //   Developer: Abdul Qadir Soomro
 // ============================================
 
-const API_URL = '';
+const API_URL = '/api';
 let currentUser = null;
 try { const s = localStorage.getItem('currentUser'); if (s) currentUser = JSON.parse(s); } catch(e) { localStorage.removeItem('currentUser'); }
 
