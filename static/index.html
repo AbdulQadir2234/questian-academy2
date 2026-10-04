@@ -6,334 +6,334 @@
     <meta name="theme-color" content="#4F46E5">
     <title>Questian Academy - AI LMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=15">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
 
-    <nav>
-        <h2 onclick="showView('home')">🎓 Questian Academy</h2>
-        <ul id="nav-links">
-            <li onclick="showView('home')">Home</li>
-            <li onclick="showView('admission')">Admission</li>
-            <li onclick="showView('courses')">Courses</li>
-            <li onclick="showView('software')">Software</li>
-            <li onclick="showView('news')">News</li>
-            <li onclick="showView('about')">About</li>
-            <li id="login-btn" onclick="showView('login')">Login</li>
+<nav>
+    <h2 onclick="showView('home')">🎓 Questian Academy</h2>
+    <ul id="nav-links">
+        <li onclick="showView('home')">Home</li>
+        <li onclick="showView('admission')">Admission</li>
+        <li onclick="showView('courses')">Courses</li>
+        <li onclick="showView('software')">Software</li>
+        <li onclick="showView('news')">News</li>
+        <li onclick="showView('about')">About</li>
+        <li id="login-btn" onclick="showView('login')">Login</li>
+    </ul>
+    <div id="user-info"></div>
+    <div class="profile-menu-wrapper">
+        <button id="profile-btn" class="profile-btn hidden" onclick="toggleProfileMenu(event)"><span id="profile-initial">A</span></button>
+        <div id="profile-dropdown" class="profile-dropdown hidden">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profile-avatar">A</div>
+                <div><div class="profile-name" id="profile-name">Ali</div><div class="profile-role" id="profile-role">Student</div></div>
+            </div>
+            <div class="profile-divider"></div>
+            <a class="profile-item" onclick="openDashboard()"><span>📊</span> Dashboard</a>
+            <a class="profile-item" onclick="openSettings()"><span>⚙️</span> Settings</a>
+            <a class="profile-item" onclick="openPayment()"><span>💳</span> Payment</a>
+            <a class="profile-item" onclick="openCertificate()"><span>🎓</span> Certificate</a>
+            <div class="profile-divider"></div>
+            <a class="profile-item profile-logout" onclick="logout()"><span>🚪</span> Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HOME VIEW -->
+<div class="container active" id="home-view">
+    <div class="hero-section">
+        <h1>Welcome to the Future of Learning</h1>
+        <p>Pakistan's leading AI-powered online education platform. Yahan aap admission le sakte hain, video courses dekh sakte hain, software download kar sakte hain aur MCQ tests de sakte hain.</p>
+        <div class="hero-buttons">
+            <button onclick="showView('admission')" class="btn-primary">🎓 Apply Now</button>
+            <button onclick="showView('courses')" class="btn-secondary">📚 View Courses</button>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <div class="stat-box"><div class="stat-number" data-target="500">0</div><div class="stat-label">Students</div></div>
+        <div class="stat-box"><div class="stat-number" data-target="12">0</div><div class="stat-label">Courses</div></div>
+        <div class="stat-box"><div class="stat-number" data-target="24">0</div><div class="stat-label">Support Hours</div></div>
+        <div class="stat-box"><div class="stat-number" data-target="5">0</div><div class="stat-label">★ Rating</div></div>
+    </div>
+
+    <div class="testimonials-section">
+        <h2>What Our Students Say</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Questian Academy ne meri life badal di! Python course karke maine apni first job li."</p>
+                <div class="testimonial-author"><div class="author-avatar">A</div><div><div class="author-name">Ahmed Khan</div><div class="author-role">Python Student</div></div></div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"AI aur ML course bohat acha hai. Teachers ka support aur AI assistant best hai!"</p>
+                <div class="testimonial-author"><div class="author-avatar">F</div><div><div class="author-name">Fatima Ali</div><div class="author-role">AI/ML Student</div></div></div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Cyber Security course se maine penetration testing seekhi. Highly recommended!"</p>
+                <div class="testimonial-author"><div class="author-avatar">B</div><div><div class="author-name">Bilal Raza</div><div class="author-role">Cyber Security Student</div></div></div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Web development sikh kar maine apni website banayi. Best platform in Pakistan!"</p>
+                <div class="testimonial-author"><div class="author-avatar">S</div><div><div class="author-name">Sara Ahmed</div><div class="author-role">Web Dev Student</div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADMISSION VIEW -->
+<div class="container" id="admission-view">
+    <h2>Admission Form</h2>
+    <p class="subtitle">Fill out the form below to enroll in our courses.</p>
+    <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+        <button id="voice-guide-btn" onclick="admissionVoiceGuide()" style="background:linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%); color:white; padding:12px 22px; border-radius:25px; font-size:0.95rem; min-height:auto; border:none; cursor:pointer; display:flex; align-items:center; gap:8px;">🎙️ Guide Sunein (Urdu)</button>
+        <button id="voice-toggle-btn" onclick="toggleVoice()" style="background:#E0E7FF; color:#4F46E5; padding:12px 18px; border-radius:25px; font-size:1.1rem; min-height:auto; border:none; cursor:pointer; font-weight:600;">🔊 ON</button>
+    </div>
+    <form onsubmit="submitAdmission(event)" class="styled-form">
+        <div class="form-group"><label>Full Name</label><input type="text" id="adm-name" placeholder="Enter your name" required onfocus="admissionFieldGuide('name')"></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="adm-email" placeholder="Enter your email" required onfocus="admissionFieldGuide('email')"></div>
+        <div class="form-group"><label>Phone Number</label><input type="text" id="adm-phone" placeholder="Enter your phone" required onfocus="admissionFieldGuide('phone')"></div>
+        <div class="form-group"><label>Select Course</label>
+            <select id="adm-course" onfocus="admissionFieldGuide('course')">
+                <option value="Mobile App Development">Mobile App Development</option>
+                <option value="Cyber Security">Cyber Security</option>
+                <option value="Graphics Designing">Graphics Designing</option>
+                <option value="Penetration Testing">Penetration Testing</option>
+                <option value="Ethical Hacking">Ethical Hacking</option>
+                <option value="Python">Python</option>
+                <option value="AI & Machine Learning">AI & Machine Learning</option>
+                <option value="Deep Learning">Deep Learning</option>
+                <option value="C#">C#</option>
+                <option value="C Language">C Language</option>
+                <option value="C++">C++</option>
+                <option value="Java (OOP)">Java (OOP)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-primary full-width">Submit Admission</button>
+    </form>
+</div>
+
+<!-- COURSES VIEW -->
+<div class="container" id="courses-view">
+    <h2>Video Courses</h2>
+    <div class="course-filters">
+        <button class="filter-btn active" onclick="filterCourses('all', this)">All</button>
+        <button class="filter-btn" onclick="filterCourses('programming', this)">Programming</button>
+        <button class="filter-btn" onclick="filterCourses('security', this)">Security</button>
+        <button class="filter-btn" onclick="filterCourses('ai', this)">AI/ML</button>
+        <button class="filter-btn" onclick="filterCourses('design', this)">Design</button>
+        <button class="filter-btn" onclick="filterCourses('mobile', this)">Mobile</button>
+    </div>
+    <div class="grid" id="courses-list"></div>
+    <div id="course-detail" class="hidden course-detail-box">
+        <button onclick="hideCourseDetail()" class="btn-danger">← Back to Courses</button>
+        <h3 id="detail-title"></h3>
+        <div class="video-placeholder"><span>▶ Video Player</span></div>
+        <div class="course-actions">
+            <button onclick="downloadNotes()" class="btn-success">📥 Download Notes (PDF)</button>
+            <button onclick="startTest()" class="btn-primary">📝 Take MCQ Test</button>
+        </div>
+        <div id="test-area" class="hidden test-box">
+            <h4>Quick Test</h4>
+            <p>1. What does HTML stand for?</p>
+            <div class="test-option"><input type="radio" name="q1" value="a"> Hyper Text Markup Language</div>
+            <div class="test-option"><input type="radio" name="q1" value="b"> Home Tool Markup Language</div>
+            <button onclick="submitTest()" class="btn-success">Submit Test</button>
+        </div>
+    </div>
+</div>
+
+<!-- SOFTWARE VIEW -->
+<div class="container" id="software-view">
+    <h2>Software Downloads</h2>
+    <div class="grid" id="software-list"></div>
+</div>
+
+<!-- NEWS VIEW -->
+<div class="container" id="news-view">
+    <h2>News & Updates</h2>
+    <div id="news-list" class="news-grid"></div>
+</div>
+
+<!-- ABOUT VIEW -->
+<div class="container" id="about-view">
+    <div class="about-hero">
+        <h1>About Questian Academy</h1>
+        <p class="about-tagline">Learn Modern Skills, Build Your Future</p>
+    </div>
+
+    <div class="about-section">
+        <h2>About Us</h2>
+        <div class="about-underline"></div>
+        <p>Questian Academy ek online learning platform hai jahan aap modern technology skills seekh sakte hain. Yahan aap Web Development, Cyber Security, Artificial Intelligence, Machine Learning, aur programming languages ki courses kar sakte hain.</p>
+        <p>Hamara maqsad hai ke Pakistan aur duniya bhar ke students ko affordable aur quality education mile. Har course mein video lectures, notes, aur MCQ tests shamil hain. Hamara AI assistant 24/7 aapki madad ke liye available hai.</p>
+    </div>
+
+    <div class="about-section">
+        <h2>What We Offer</h2>
+        <div class="about-underline"></div>
+        <ul class="about-list">
+            <li>📚 <strong>12+ Professional Courses</strong> — Web, AI, Cyber Security, Programming</li>
+            <li>🎥 <strong>Video Lectures</strong> — Har course ke saath YouTube videos</li>
+            <li>📝 <strong>MCQ Tests</strong> — Apna knowledge check karein</li>
+            <li>📥 <strong>Notes Download</strong> — Study material PDF format mein</li>
+            <li>🤖 <strong>AI Assistant</strong> — 24/7 sawalon ke jawab</li>
+            <li>💬 <strong>Teacher Chat</strong> — Direct teachers se baat karein</li>
+            <li>📊 <strong>Progress Tracking</strong> — Apni learning track karein</li>
         </ul>
-        <div id="user-info"></div>
-        <div class="profile-menu-wrapper">
-            <button id="profile-btn" class="profile-btn hidden" onclick="toggleProfileMenu(event)"><span id="profile-initial">A</span></button>
-            <div id="profile-dropdown" class="profile-dropdown hidden">
-                <div class="profile-header">
-                    <div class="profile-avatar" id="profile-avatar">A</div>
-                    <div><div class="profile-name" id="profile-name">Ali</div><div class="profile-role" id="profile-role">Student</div></div>
-                </div>
-                <div class="profile-divider"></div>
-                <a class="profile-item" onclick="openDashboard()"><span>📊</span> Dashboard</a>
-                <a class="profile-item" onclick="openSettings()"><span>⚙️</span> Settings</a>
-                <a class="profile-item" onclick="openPayment()"><span>💳</span> Payment</a>
-                <a class="profile-item" onclick="openCertificate()"><span>🎓</span> Certificate</a>
-                <div class="profile-divider"></div>
-                <a class="profile-item profile-logout" onclick="logout()"><span>🚪</span> Logout</a>
-            </div>
-        </div>
-    </nav>
+    </div>
 
-    <!-- HOME VIEW -->
-    <div class="container active" id="home-view">
-        <div class="hero-section">
-            <h1>Welcome to the Future of Learning</h1>
-            <p>Pakistan's leading AI-powered online education platform. Yahan aap admission le sakte hain, video courses dekh sakte hain, software download kar sakte hain aur MCQ tests de sakte hain.</p>
-            <div class="hero-buttons">
-                <button onclick="showView('admission')" class="btn-primary">🎓 Apply Now</button>
-                <button onclick="showView('courses')" class="btn-secondary">📚 View Courses</button>
-            </div>
-        </div>
-
-        <div class="stats-section">
-            <div class="stat-box"><div class="stat-number" data-target="500">0</div><div class="stat-label">Students</div></div>
-            <div class="stat-box"><div class="stat-number" data-target="12">0</div><div class="stat-label">Courses</div></div>
-            <div class="stat-box"><div class="stat-number" data-target="24">0</div><div class="stat-label">Support Hours</div></div>
-            <div class="stat-box"><div class="stat-number" data-target="5">0</div><div class="stat-label">★ Rating</div></div>
-        </div>
-
-        <div class="testimonials-section">
-            <h2>What Our Students Say</h2>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p>"Questian Academy ne meri life badal di! Python course karke maine apni first job li."</p>
-                    <div class="testimonial-author"><div class="author-avatar">A</div><div><div class="author-name">Ahmed Khan</div><div class="author-role">Python Student</div></div></div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p>"AI aur ML course bohat acha hai. Teachers ka support aur AI assistant best hai!"</p>
-                    <div class="testimonial-author"><div class="author-avatar">F</div><div><div class="author-name">Fatima Ali</div><div class="author-role">AI/ML Student</div></div></div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p>"Cyber Security course se maine penetration testing seekhi. Highly recommended!"</p>
-                    <div class="testimonial-author"><div class="author-avatar">B</div><div><div class="author-name">Bilal Raza</div><div class="author-role">Cyber Security Student</div></div></div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p>"Web development sikh kar maine apni website banayi. Best platform in Pakistan!"</p>
-                    <div class="testimonial-author"><div class="author-avatar">S</div><div><div class="author-name">Sara Ahmed</div><div class="author-role">Web Dev Student</div></div></div>
+    <div class="about-section">
+        <h2>About Developer</h2>
+        <div class="about-underline"></div>
+        <div class="developer-card">
+            <div class="developer-avatar" id="dev-avatar">A</div>
+            <div class="developer-info">
+                <h3 id="dev-name">Abdul Qadir Soomro</h3>
+                <p class="dev-role">Full Stack Web Developer • Penetration Tester • AI & ML Engineer</p>
+                <div class="dev-contact">
+                    <div class="dev-contact-item"><span class="dev-icon">📧</span><div><div class="dev-label">Email</div><a id="dev-email" href="mailto:24cse23@quest.edu.pk">24cse23@quest.edu.pk</a></div></div>
+                    <div class="dev-contact-item"><span class="dev-icon">📱</span><div><div class="dev-label">Phone / WhatsApp</div><a id="dev-phone" href="tel:03359996428">03359996428</a></div></div>
+                    <div class="dev-contact-item"><span class="dev-icon">📍</span><div><div class="dev-label">Location</div><div id="dev-location">Larkana, Pakistan</div></div></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ADMISSION VIEW -->
-    <div class="container" id="admission-view">
-        <h2>Admission Form</h2>
-        <p class="subtitle">Fill out the form below to enroll in our courses.</p>
-        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-            <button id="voice-guide-btn" onclick="admissionVoiceGuide()" style="background:linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%); color:white; padding:12px 22px; border-radius:25px; font-size:0.95rem; min-height:auto; border:none; cursor:pointer; display:flex; align-items:center; gap:8px;">🎙️ Guide Sunein (Urdu)</button>
-            <button id="voice-toggle-btn" onclick="toggleVoice()" style="background:#E0E7FF; color:#4F46E5; padding:12px 18px; border-radius:25px; font-size:1.1rem; min-height:auto; border:none; cursor:pointer; font-weight:600;">🔊 ON</button>
-        </div>
-        <form onsubmit="submitAdmission(event)" class="styled-form">
-            <div class="form-group"><label>Full Name</label><input type="text" id="adm-name" placeholder="Enter your name" required onfocus="admissionFieldGuide('name')"></div>
-            <div class="form-group"><label>Email Address</label><input type="email" id="adm-email" placeholder="Enter your email" required onfocus="admissionFieldGuide('email')"></div>
-            <div class="form-group"><label>Phone Number</label><input type="text" id="adm-phone" placeholder="Enter your phone" required onfocus="admissionFieldGuide('phone')"></div>
-            <div class="form-group"><label>Select Course</label>
-                <select id="adm-course" onfocus="admissionFieldGuide('course')">
-                    <option value="Mobile App Development">Mobile App Development</option>
-                    <option value="Cyber Security">Cyber Security</option>
-                    <option value="Graphics Designing">Graphics Designing</option>
-                    <option value="Penetration Testing">Penetration Testing</option>
-                    <option value="Ethical Hacking">Ethical Hacking</option>
-                    <option value="Python">Python</option>
-                    <option value="AI & Machine Learning">AI & Machine Learning</option>
-                    <option value="Deep Learning">Deep Learning</option>
-                    <option value="C#">C#</option>
-                    <option value="C Language">C Language</option>
-                    <option value="C++">C++</option>
-                    <option value="Java (OOP)">Java (OOP)</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-primary full-width">Submit Admission</button>
+    <div class="contact-box">
+        <h3>📬 Koi Sawal Hai? Message Bhejein</h3>
+        <p class="subtitle">Fill out the form below and we'll get back to you soon.</p>
+        <form onsubmit="submitContact(event)" class="styled-form">
+            <div class="form-group"><label>Your Name</label><input type="text" id="contact-name" placeholder="Enter your name" required></div>
+            <div class="form-group"><label>Your Email</label><input type="email" id="contact-email" placeholder="Enter your email" required></div>
+            <div class="form-group"><label>Subject</label><input type="text" id="contact-subject" placeholder="What is this about?" required></div>
+            <div class="form-group"><label>Message</label><textarea id="contact-message" rows="5" placeholder="Type your message here..." required></textarea></div>
+            <button type="submit" class="btn-primary full-width">📤 Send Message</button>
         </form>
     </div>
+</div>
 
-    <!-- COURSES VIEW -->
-    <div class="container" id="courses-view">
-        <h2>Video Courses</h2>
-        <div class="course-filters">
-            <button class="filter-btn active" onclick="filterCourses('all', this)">All</button>
-            <button class="filter-btn" onclick="filterCourses('programming', this)">Programming</button>
-            <button class="filter-btn" onclick="filterCourses('security', this)">Security</button>
-            <button class="filter-btn" onclick="filterCourses('ai', this)">AI/ML</button>
-            <button class="filter-btn" onclick="filterCourses('design', this)">Design</button>
-            <button class="filter-btn" onclick="filterCourses('mobile', this)">Mobile</button>
-        </div>
-        <div class="grid" id="courses-list"></div>
-        <div id="course-detail" class="hidden course-detail-box">
-            <button onclick="hideCourseDetail()" class="btn-danger">← Back to Courses</button>
-            <h3 id="detail-title"></h3>
-            <div class="video-placeholder"><span>▶ Video Player</span></div>
-            <div class="course-actions">
-                <button onclick="downloadNotes()" class="btn-success">📥 Download Notes (PDF)</button>
-                <button onclick="startTest()" class="btn-primary">📝 Take MCQ Test</button>
+<!-- LOGIN VIEW -->
+<div class="container" id="login-view">
+    <div class="login-card">
+        <h2 id="auth-title">Login Portal</h2>
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <input type="text" id="login-user" placeholder="Username" required>
+            <input type="password" id="login-pass" placeholder="Password" required>
+            <button type="submit" class="btn-primary full-width">Login</button>
+        </form>
+        <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
+            <input type="text" id="signup-name" placeholder="Full Name" required>
+            <input type="text" id="signup-user" placeholder="Username" required>
+            <input type="email" id="signup-email" placeholder="Email Address" required>
+            <input type="password" id="signup-pass" placeholder="Password (min 3 chars)" required>
+            <select id="signup-role" onchange="onRoleChange()">
+                <option value="student">Student</option>
+                <option value="teacher">Teacher (Approved Email Only)</option>
+            </select>
+            <p id="teacher-note" style="display:none; color:#DC2626; font-size:0.8rem; margin-top:5px;">⚠️ Teacher account ke liye approved email zaroori hai</p>
+            <button type="submit" class="btn-success full-width">Create Account</button>
+        </form>
+        <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#4F46E5;font-weight:600;cursor:pointer;text-decoration:underline;">Sign Up</span></p>
+        <p class="demo-text">Demo: student/123</p>
+    </div>
+</div>
+
+<!-- STUDENT DASHBOARD -->
+<div class="container" id="student-dashboard">
+    <div class="dashboard-header"><h2>Student Dashboard</h2><span>Welcome, <b id="stu-name"></b></span></div>
+    <div class="grid">
+        <div class="card"><h3>📅 Attendance</h3><p>Mark your today's attendance.</p><button onclick="markAttendance()" class="btn-success">Mark Present</button><p id="attendance-status" class="status-text"></p></div>
+        <div class="card"><h3>💰 Fees Status</h3><p>Status: <span class="badge-success">Paid</span></p><p>Next Due: 15th Nov 2026</p></div>
+        <div class="card"><h3>💬 Chat with Teacher</h3><div class="chat-box" id="student-chat-box"></div><div class="chat-input-group"><input type="text" id="student-msg" placeholder="Type message..."><button onclick="sendChat('student')">Send</button></div></div>
+        <div class="card" style="grid-column: 1 / -1;"><h3>📊 My Progress</h3><div id="progress-list"></div></div>
+    </div>
+</div>
+
+<!-- TEACHER DASHBOARD -->
+<div class="container" id="teacher-dashboard">
+    <div class="dashboard-header"><h2>Teacher Dashboard</h2><span>Welcome, <b id="teacher-name"></b></span></div>
+    <div class="grid">
+        <div class="card"><h3>➕ Add News</h3><input type="text" id="new-news" placeholder="Enter news text"><button onclick="addNews()" class="btn-success">Post News</button></div>
+        <div class="card"><h3>💻 Add Software</h3><input type="text" id="new-soft-name" placeholder="Software Name"><input type="text" id="new-soft-link" placeholder="Download Link"><input type="text" id="new-soft-image" placeholder="Image URL (optional)"><button onclick="addSoftware()" class="btn-success">Add Software</button></div>
+        <div class="card"><h3>📚 Add Course</h3><input type="text" id="new-course-title" placeholder="Course Title"><input type="text" id="new-course-image" placeholder="Image URL (optional)"><button onclick="addCourse()" class="btn-success">Add Course</button></div>
+        <div class="card"><h3>👨‍🎓 Student Activity</h3><ul class="activity-list"><li>Student1 - Attended Class ✅</li><li>Student2 - Missed Class ❌</li></ul></div>
+        <div class="card"><h3>💬 Student Chats</h3><div class="chat-box" id="teacher-chat-box"></div><div class="chat-input-group"><input type="text" id="teacher-msg" placeholder="Reply..."><button onclick="sendChat('teacher')">Reply</button></div></div>
+        <div class="card"><h3>⚙️ Manage Content</h3><div id="manage-content"></div></div>
+        <div class="card" style="border: 2px solid #EF4444;">
+            <h3>🛡️ Security Center</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:15px;">
+                <div style="background:#FEE2E2; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#DC2626;" id="stat-attacks">0</div><div style="font-size:0.75rem; color:#991B1B;">Total Attacks</div></div>
+                <div style="background:#FEF3C7; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#D97706;" id="stat-blocked">0</div><div style="font-size:0.75rem; color:#92400E;">Blocked IPs</div></div>
+                <div style="background:#DBEAFE; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#2563EB;" id="stat-today">0</div><div style="font-size:0.75rem; color:#1E40AF;">Today Attacks</div></div>
+                <div style="background:#FCE7F3; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#DB2777;" id="stat-logins">0</div><div style="font-size:0.75rem; color:#9D174D;">Failed Logins</div></div>
             </div>
-            <div id="test-area" class="hidden test-box">
-                <h4>Quick Test</h4>
-                <p>1. What does HTML stand for?</p>
-                <div class="test-option"><input type="radio" name="q1" value="a"> Hyper Text Markup Language</div>
-                <div class="test-option"><input type="radio" name="q1" value="b"> Home Tool Markup Language</div>
-                <button onclick="submitTest()" class="btn-success">Submit Test</button>
+            <button onclick="loadSecurityPanel()" class="btn-primary" style="width:100%;">🔄 Refresh</button>
+        </div>
+    </div>
+</div>
+
+<!-- AI CHATBOT -->
+<button id="ai-toggle-btn" onclick="toggleAI()">🤖</button>
+<div id="ai-chat-container" class="hidden">
+    <div class="ai-header"><div class="ai-title"><span class="ai-dot"></span> Questian AI</div><span class="close-ai" onclick="toggleAI()">×</span></div>
+    <div class="ai-messages" id="ai-messages"><div class="ai-msg bot">Hello! I am Questian AI. Aap mujhse courses, fees, ya admission ke baare mein pooch sakte hain.</div></div>
+    <div class="ai-input-area"><input type="text" id="ai-input" placeholder="Ask me anything..." onkeypress="handleAIKeyPress(event)"><button onclick="sendAIMessage()">➤</button></div>
+</div>
+
+<!-- FOOTER - OUTSIDE ALL CONTAINERS -->
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="footer-col">
+            <h3>🎓 Questian Academy</h3>
+            <p>Pakistan's emerging AI-powered learning platform. Modern skills seekhein aur apna future banayein.</p>
+            <div class="social-links">
+                <a href="#" title="Facebook">📘</a>
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="YouTube">📺</a>
+                <a href="#" title="LinkedIn">💼</a>
             </div>
         </div>
-    </div>
-
-    <!-- SOFTWARE VIEW -->
-    <div class="container" id="software-view">
-        <h2>Software Downloads</h2>
-        <div class="grid" id="software-list"></div>
-    </div>
-
-    <!-- NEWS VIEW -->
-    <div class="container" id="news-view">
-        <h2>News & Updates</h2>
-        <div id="news-list" class="news-grid"></div>
-    </div>
-
-    <!-- ABOUT VIEW -->
-    <div class="container" id="about-view">
-        <div class="about-hero">
-            <h1>About Questian Academy</h1>
-            <p class="about-tagline">Learn Modern Skills, Build Your Future</p>
-        </div>
-
-        <div class="about-section">
-            <h2>About Us</h2>
-            <div class="about-underline"></div>
-            <p>Questian Academy ek online learning platform hai jahan aap modern technology skills seekh sakte hain. Yahan aap Web Development, Cyber Security, Artificial Intelligence, Machine Learning, aur programming languages ki courses kar sakte hain.</p>
-            <p>Hamara maqsad hai ke Pakistan aur duniya bhar ke students ko affordable aur quality education mile. Har course mein video lectures, notes, aur MCQ tests shamil hain. Hamara AI assistant 24/7 aapki madad ke liye available hai — Urdu aur English dono mein.</p>
-        </div>
-
-        <div class="about-section">
-            <h2>What We Offer</h2>
-            <div class="about-underline"></div>
-            <ul class="about-list">
-                <li>📚 <strong>12+ Professional Courses</strong> — Web, AI, Cyber Security, Programming</li>
-                <li>🎥 <strong>Video Lectures</strong> — Har course ke saath YouTube videos</li>
-                <li>📝 <strong>MCQ Tests</strong> — Apna knowledge check karein</li>
-                <li>📥 <strong>Notes Download</strong> — Study material PDF format mein</li>
-                <li>🤖 <strong>AI Assistant</strong> — 24/7 sawalon ke jawab</li>
-                <li>💬 <strong>Teacher Chat</strong> — Direct teachers se baat karein</li>
-                <li>📊 <strong>Progress Tracking</strong> — Apni learning track karein</li>
-                <li>🛡️ <strong>Secure Platform</strong> — Attack protection ke saath</li>
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <ul>
+                <li onclick="showView('home')">Home</li>
+                <li onclick="showView('courses')">Courses</li>
+                <li onclick="showView('software')">Software</li>
+                <li onclick="showView('admission')">Admission</li>
+                <li onclick="showView('about')">About Us</li>
             </ul>
         </div>
-
-        <div class="about-section">
-            <h2>About Developer</h2>
-            <div class="about-underline"></div>
-            <div class="developer-card">
-                <div class="developer-avatar" id="dev-avatar">A</div>
-                <div class="developer-info">
-                    <h3 id="dev-name">Abdul Qadir Soomro</h3>
-                    <p class="dev-role">Full Stack Web Developer • Penetration Tester • AI & ML Engineer</p>
-                    <div class="dev-contact">
-                        <div class="dev-contact-item"><span class="dev-icon">📧</span><div><div class="dev-label">Email</div><a id="dev-email" href="mailto:24cse23@quest.edu.pk">24cse23@quest.edu.pk</a></div></div>
-                        <div class="dev-contact-item"><span class="dev-icon">📱</span><div><div class="dev-label">Phone / WhatsApp</div><a id="dev-phone" href="tel:03359996428">03359996428</a></div></div>
-                        <div class="dev-contact-item"><span class="dev-icon">📍</span><div><div class="dev-label">Location</div><div id="dev-location">Larkana, Pakistan</div></div></div>
-                    </div>
-                </div>
-            </div>
+        <div class="footer-col">
+            <h3>Support</h3>
+            <ul>
+                <li onclick="showView('news')">News</li>
+                <li onclick="showView('about')">Contact Us</li>
+                <li onclick="openPolicy('Privacy Policy')">Privacy Policy</li>
+                <li onclick="openPolicy('Terms of Service')">Terms of Service</li>
+            </ul>
         </div>
-
-        <div class="contact-box">
-            <h3>📬 Koi Sawal Hai? Message Bhejein</h3>
-            <p class="subtitle">Fill out the form below and we'll get back to you soon.</p>
-            <form onsubmit="submitContact(event)" class="styled-form">
-                <div class="form-group"><label>Your Name</label><input type="text" id="contact-name" placeholder="Enter your name" required></div>
-                <div class="form-group"><label>Your Email</label><input type="email" id="contact-email" placeholder="Enter your email" required></div>
-                <div class="form-group"><label>Subject</label><input type="text" id="contact-subject" placeholder="What is this about?" required></div>
-                <div class="form-group"><label>Message</label><textarea id="contact-message" rows="5" placeholder="Type your message here..." required></textarea></div>
-                <button type="submit" class="btn-primary full-width">📤 Send Message</button>
-            </form>
+        <div class="footer-col">
+            <h3>Contact</h3>
+            <ul class="contact-list">
+                <li>📧 24cse23@quest.edu.pk</li>
+                <li>📱 03359996428</li>
+                <li>📍 Larkana, Pakistan</li>
+            </ul>
         </div>
     </div>
-
-    <!-- LOGIN VIEW -->
-    <div class="container" id="login-view">
-        <div class="login-card">
-            <h2 id="auth-title">Login Portal</h2>
-            <form id="login-form" onsubmit="handleLogin(event)">
-                <input type="text" id="login-user" placeholder="Username" required>
-                <input type="password" id="login-pass" placeholder="Password" required>
-                <button type="submit" class="btn-primary full-width">Login</button>
-            </form>
-                        <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
-                <input type="text" id="signup-name" placeholder="Full Name" required>
-                <input type="text" id="signup-user" placeholder="Username" required>
-                <input type="email" id="signup-email" placeholder="Email Address" required>
-                <input type="password" id="signup-pass" placeholder="Password (min 3 chars)" required>
-                <select id="signup-role" onchange="onRoleChange()">
-                    <option value="student">Student</option>
-                    <option value="teacher">Teacher (Approved Email Only)</option>
-                </select>
-                <p id="teacher-note" style="display:none; color:#DC2626; font-size:0.8rem; margin-top:5px;">⚠️ Teacher account ke liye approved email zaroori hai</p>
-                <button type="submit" class="btn-success full-width">Create Account</button>
-            </form>
-
-    <!-- STUDENT DASHBOARD -->
-    <div class="container" id="student-dashboard">
-        <div class="dashboard-header"><h2>Student Dashboard</h2><span>Welcome, <b id="stu-name"></b></span></div>
-        <div class="grid">
-            <div class="card"><h3>📅 Attendance</h3><p>Mark your today's attendance.</p><button onclick="markAttendance()" class="btn-success">Mark Present</button><p id="attendance-status" class="status-text"></p></div>
-            <div class="card"><h3>💰 Fees Status</h3><p>Status: <span class="badge-success">Paid</span></p><p>Next Due: 15th Nov 2026</p></div>
-            <div class="card"><h3>💬 Chat with Teacher</h3><div class="chat-box" id="student-chat-box"></div><div class="chat-input-group"><input type="text" id="student-msg" placeholder="Type message..."><button onclick="sendChat('student')">Send</button></div></div>
-            <div class="card" style="grid-column: 1 / -1;"><h3>📊 My Progress</h3><div id="progress-list"></div></div>
-        </div>
+    <div class="footer-bottom">
+        <p>© 2026 Questian Academy. All rights reserved. | Developer: Abdul Qadir Soomro</p>
     </div>
+</footer>
 
-    <!-- TEACHER DASHBOARD -->
-    <div class="container" id="teacher-dashboard">
-        <div class="dashboard-header"><h2>Teacher Dashboard</h2><span>Welcome, <b id="teacher-name"></b></span></div>
-        <div class="grid">
-            <div class="card"><h3>➕ Add News</h3><input type="text" id="new-news" placeholder="Enter news text"><button onclick="addNews()" class="btn-success">Post News</button></div>
-            <div class="card"><h3>💻 Add Software</h3><input type="text" id="new-soft-name" placeholder="Software Name"><input type="text" id="new-soft-link" placeholder="Download Link"><input type="text" id="new-soft-image" placeholder="Image URL (optional)"><button onclick="addSoftware()" class="btn-success">Add Software</button></div>
-            <div class="card"><h3>📚 Add Course</h3><input type="text" id="new-course-title" placeholder="Course Title"><input type="text" id="new-course-image" placeholder="Image URL (optional)"><button onclick="addCourse()" class="btn-success">Add Course</button></div>
-            <div class="card"><h3>👨‍🎓 Student Activity</h3><ul class="activity-list"><li>Student1 - Attended Class ✅</li><li>Student2 - Missed Class ❌</li></ul></div>
-            <div class="card"><h3>💬 Student Chats</h3><div class="chat-box" id="teacher-chat-box"></div><div class="chat-input-group"><input type="text" id="teacher-msg" placeholder="Reply..."><button onclick="sendChat('teacher')">Reply</button></div></div>
-            <div class="card"><h3>⚙️ Manage Content</h3><div id="manage-content"></div></div>
-            <div class="card" style="border: 2px solid #EF4444;">
-                <h3>🛡️ Security Center</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:15px;">
-                    <div style="background:#FEE2E2; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#DC2626;" id="stat-attacks">0</div><div style="font-size:0.75rem; color:#991B1B;">Total Attacks</div></div>
-                    <div style="background:#FEF3C7; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#D97706;" id="stat-blocked">0</div><div style="font-size:0.75rem; color:#92400E;">Blocked IPs</div></div>
-                    <div style="background:#DBEAFE; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#2563EB;" id="stat-today">0</div><div style="font-size:0.75rem; color:#1E40AF;">Today Attacks</div></div>
-                    <div style="background:#FCE7F3; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#DB2777;" id="stat-logins">0</div><div style="font-size:0.75rem; color:#9D174D;">Failed Logins</div></div>
-                </div>
-                <button onclick="loadSecurityPanel()" class="btn-primary" style="width:100%;">🔄 Refresh</button>
-                <button onclick="markAllRead()" class="btn-success" style="width:100%; margin-top:8px;">✅ Mark All Read</button>
-                <button onclick="loadBlockedIPs()" class="btn-danger" style="width:100%; margin-top:8px;">🚫 View Blocked IPs</button>
-            </div>
-            <div class="card" style="border: 2px solid #F59E0B; grid-column: 1 / -1;"><h3>🔔 Notifications <span id="notif-badge" style="background:#DC2626; color:white; padding:2px 10px; border-radius:12px; font-size:0.8rem;">0</span></h3><div id="notifications-list" style="max-height:300px; overflow-y:auto; margin-top:10px;"></div></div>
-        </div>
-    </div>
+<!-- WHATSAPP BUTTON -->
+<a href="https://wa.me/923359996428?text=Assalam%20o%20Alaikum%20Questian%20Academy" target="_blank" class="whatsapp-btn" title="WhatsApp Support"><span>💬</span></a>
 
-    <!-- AI CHATBOT -->
-    <button id="ai-toggle-btn" onclick="toggleAI()">🤖</button>
-    <div id="ai-chat-container" class="hidden">
-        <div class="ai-header"><div class="ai-title"><span class="ai-dot"></span> Questian AI</div><span class="close-ai" onclick="toggleAI()">×</span></div>
-        <div class="ai-messages" id="ai-messages"><div class="ai-msg bot">Hello! I am Questian AI. Aap mujhse courses, fees, ya admission ke baare mein pooch sakte hain.</div></div>
-        <div class="ai-input-area"><input type="text" id="ai-input" placeholder="Ask me anything..." onkeypress="handleAIKeyPress(event)"><button onclick="sendAIMessage()">➤</button></div>
-    </div>
-
-    <!-- FOOTER -->
-    <footer class="main-footer">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>🎓 Questian Academy</h3>
-                <p>Pakistan's emerging AI-powered learning platform. Modern skills seekhein aur apna future banayein.</p>
-                <div class="social-links">
-                    <a href="#" title="Facebook">📘</a>
-                    <a href="#" title="Instagram">📷</a>
-                    <a href="#" title="YouTube">📺</a>
-                    <a href="#" title="LinkedIn">💼</a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li onclick="showView('home')">Home</li>
-                    <li onclick="showView('courses')">Courses</li>
-                    <li onclick="showView('software')">Software</li>
-                    <li onclick="showView('admission')">Admission</li>
-                    <li onclick="showView('about')">About Us</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Support</h3>
-                <ul>
-                    <li onclick="showView('news')">News</li>
-                    <li onclick="showView('about')">Contact Us</li>
-                    <li onclick="openPolicy('Privacy Policy')">Privacy Policy</li>
-                    <li onclick="openPolicy('Terms of Service')">Terms of Service</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Contact</h3>
-                <ul class="contact-list">
-                    <li>📧 24cse23@quest.edu.pk</li>
-                    <li>📱 03359996428</li>
-                    <li>📍 Larkana, Pakistan</li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>© 2026 Questian Academy. All rights reserved. | Developer: Abdul Qadir Soomro</p>
-        </div>
-    </footer>
-
-    <!-- WHATSAPP BUTTON -->
-    <a href="https://wa.me/923359996428?text=Assalam%20o%20Alaikum%20Questian%20Academy" target="_blank" class="whatsapp-btn" title="WhatsApp Support"><span>💬</span></a>
-
-    <script src="script.js?v=15"></script>
+<script src="script.js?v=20"></script>
 </body>
 </html>
