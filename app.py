@@ -2,6 +2,7 @@
 ==============================================
     QUESTIAN ACADEMY - Backend
     Developer: Abdul Qadir Soomro
+    Teacher Email: 24cse23@quest.edu.pk
 ==============================================
 """
 
@@ -18,25 +19,36 @@ load_dotenv()
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'questian-academy-secret-2026')
-CORS(app, origins=['http://127.0.0.1:5000', 'http://localhost:5000'])
+CORS(app, origins=['*'])
 
-# Gemini Multi-Model
+# ============================================
+#   GEMINI AI SETUP
+# ============================================
 GEMINI_KEY = os.environ.get('GEMINI_API_KEY')
 gemini_client = None
-GEMINI_MODELS = ['gemini-1.5-flash-latest', 'gemini-2.0-flash-exp', 'gemini-1.5-pro-latest', 'gemini-pro']
+GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-flash-latest', 'gemini-1.5-flash']
 
 if GEMINI_KEY:
     try:
         from google import genai
         gemini_client = genai.Client(api_key=GEMINI_KEY)
-        print(f"✅ Gemini client ready")
+        print("✅ Gemini client ready")
     except Exception as e:
         print(f"⚠️ Gemini error: {str(e)[:150]}")
         gemini_client = None
-else:
-    print("⚠️ GEMINI_API_KEY not found")
 
 DATABASE = 'academy.db'
+
+# ============================================
+#   🎯 APPROVED TEACHER EMAILS
+# ============================================
+APPROVED_TEACHER_EMAILS = [
+    '24cse23@quest.edu.pk',
+]
+
+# ============================================
+#   SECURITY CONFIG
+# ============================================
 MAX_LOGIN_ATTEMPTS = 10
 BLOCK_DURATION_MINUTES = 5
 SUSPICIOUS_PATTERNS = [
@@ -57,12 +69,14 @@ def init_db():
     conn = get_db()
     cursor = conn.cursor()
 
+    # Users Table WITH EMAIL
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         role TEXT NOT NULL,
         name TEXT NOT NULL,
+        email TEXT,
         created_at TEXT)''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS courses (
@@ -144,7 +158,6 @@ def init_db():
         is_read INTEGER DEFAULT 0,
         timestamp TEXT)''')
 
-    # Contact Messages
     cursor.execute('''CREATE TABLE IF NOT EXISTS contacts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -156,13 +169,15 @@ def init_db():
 
     conn.commit()
 
+    # Default Users (with emails)
     cursor.execute("SELECT COUNT(*) FROM users")
     if cursor.fetchone()[0] == 0:
-        cursor.execute("INSERT INTO users (username, password, role, name, created_at) VALUES (?, ?, ?, ?, ?)",
-                       ('student', generate_password_hash('123'), 'student', 'Ali', datetime.now().strftime('%Y-%m-%d %H:%M')))
-        cursor.execute("INSERT INTO users (username, password, role, name, created_at) VALUES (?, ?, ?, ?, ?)",
-                       ('teacher', generate_password_hash('123'), 'teacher', 'Sir Ahmed', datetime.now().strftime('%Y-%m-%d %H:%M')))
+        cursor.execute("INSERT INTO users (username, password, role, name, email, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                       ('student', generate_password_hash('123'), 'student', 'Ali', 'student@example.com', datetime.now().strftime('%Y-%m-%d %H:%M')))
+        cursor.execute("INSERT INTO users (username, password, role, name, email, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                       ('teacher', generate_password_hash('12345678900'), 'teacher', 'Abdul Qadir Soomro', '24cse23@quest.edu.pk', datetime.now().strftime('%Y-%m-%d %H:%M')))
 
+    # Default Courses
     cursor.execute("SELECT COUNT(*) FROM courses")
     if cursor.fetchone()[0] == 0:
         default_courses = [
@@ -181,6 +196,7 @@ def init_db():
         ]
         cursor.executemany("INSERT INTO courses (title, description, image) VALUES (?, ?, ?)", default_courses)
 
+    # Default Software
     cursor.execute("SELECT COUNT(*) FROM software")
     if cursor.fetchone()[0] == 0:
         default_software = [
@@ -195,11 +211,13 @@ def init_db():
         ]
         cursor.executemany("INSERT INTO software (name, link, image) VALUES (?, ?, ?)", default_software)
 
+    # Default News
     cursor.execute("SELECT COUNT(*) FROM news")
     if cursor.fetchone()[0] == 0:
         cursor.execute("INSERT INTO news (text, date) VALUES (?, ?)",
                        ('Welcome to Questian Academy! New AI-powered semester started.', datetime.now().strftime('%Y-%m-%d %H:%M')))
 
+    # Default Chat
     cursor.execute("SELECT COUNT(*) FROM chats")
     if cursor.fetchone()[0] == 0:
         cursor.execute("INSERT INTO chats (sender, message, timestamp) VALUES (?, ?, ?)",
@@ -211,50 +229,20 @@ def init_db():
     conn.close()
 
 
+# ============================================
+#   🎯 INIT_DB ALWAYS RUNS (Railway + Local)
+# ============================================
+init_db()
+print("✅ Database initialized")
+
+
+# ============================================
+#   HELPER FUNCTIONS
+# ============================================
 def get_client_ip():
     if request.headers.get('X-Forwarded-For'):
         return request.headers.get('X-Forwarded-For').split(',')[0].strip()
     return request.remote_addr or 'unknown'
-
-
-def is_ip_blocked(ip):
-    conn = get_db()
-    cursor = conn.cursor()
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    cursor.execute("SELECT * FROM blocked_ips WHERE ip=? AND blocked_until > ?", (ip, now))
-    result = cursor.fetchone()
-    conn.close()
-    return result is not None
-
-
-def block_ip(ip, reason, minutes=BLOCK_DURATION_MINUTES):
-    conn = get_db()
-    cursor = conn.cursor()
-    now = datetime.now()
-    blocked_until = (now + timedelta(minutes=minutes)).strftime('%Y-%m-%d %H:%M:%S')
-    cursor.execute("SELECT * FROM blocked_ips WHERE ip=?", (ip,))
-    if cursor.fetchone():
-        cursor.execute("UPDATE blocked_ips SET reason=?, blocked_at=?, blocked_until=? WHERE ip=?",
-                       (reason, now.strftime('%Y-%m-%d %H:%M:%S'), blocked_until, ip))
-    else:
-        cursor.execute("INSERT INTO blocked_ips (ip, reason, blocked_at, blocked_until) VALUES (?, ?, ?, ?)",
-                       (ip, reason, now.strftime('%Y-%m-%d %H:%M:%S'), blocked_until))
-    conn.commit()
-    conn.close()
-
-
-def log_attack(ip, attack_type, details, endpoint, severity='MEDIUM'):
-    conn = get_db()
-    cursor = conn.cursor()
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    ua = request.headers.get('User-Agent', 'Unknown')[:200]
-    cursor.execute("INSERT INTO attack_logs (ip, attack_type, details, endpoint, user_agent, timestamp, severity) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                   (ip, attack_type, details[:500], endpoint, ua, now, severity))
-    cursor.execute("INSERT INTO notifications (title, message, type, is_read, timestamp) VALUES (?, ?, ?, 0, ?)",
-                   (f"⚠️ {attack_type} Detected!",
-                    f"IP: {ip}\nEndpoint: {endpoint}\nDetails: {details[:200]}", 'attack', now))
-    conn.commit()
-    conn.close()
 
 
 def sanitize_input(text, max_length=500):
@@ -274,39 +262,12 @@ def validate_username(username):
     return re.match(r'^[a-zA-Z0-9_]{3,20}$', username) is not None
 
 
+# ============================================
+#   SECURITY - DISABLED FOR DEMO
+# ============================================
 @app.before_request
 def security_check():
-    ip = get_client_ip()
-    
-    # 🎯 SAFE IPs whitelist - kabhi block nahi honge
-    safe_ips = ['127.0.0.1', 'localhost', '::1', 'unknown', None, '']
-    if ip in safe_ips:
-        return None
-    
-    # 🎯 Railway/Cloudflare/Docker internal IPs whitelist
-    if ip.startswith('10.') or ip.startswith('172.') or ip.startswith('192.168.') or ip.startswith('100.') or ip.startswith('35.'):
-        return None
-    
-    # 🎯 Blocked IP check (sirf external IPs)
-    if is_ip_blocked(ip):
-        return jsonify({'success': False, 'message': 'IP blocked.'}), 403
-    
-    # 🎯 Sirf external POST/PUT mein suspicious patterns check karein
-    if request.method in ['POST', 'PUT']:
-        try:
-            data = request.get_json(silent=True)
-            if data:
-                detected = None
-                for pattern in SUSPICIOUS_PATTERNS:
-                    if re.search(pattern, str(data), re.IGNORECASE):
-                        detected = pattern
-                        break
-                if detected:
-                    log_attack(ip, "MALICIOUS_INPUT", f"Pattern: {detected}", request.path, 'HIGH')
-                    # block_ip(ip, f"Malicious input")  # Blocking disabled for demo
-                    return jsonify({'success': False, 'message': 'Suspicious input detected'}), 400
-        except:
-            pass
+    return None
 
 
 @app.after_request
@@ -321,6 +282,9 @@ def add_security_headers(response):
     return response
 
 
+# ============================================
+#   FRONTEND
+# ============================================
 @app.route('/')
 def serve_index():
     return send_from_directory('static', 'index.html')
@@ -332,46 +296,10 @@ def serve_static(filename):
 
 
 # ============================================
-#   CONTACT API
-# ============================================
-@app.route('/api/contact', methods=['POST'])
-def submit_contact():
-    data = request.get_json() or {}
-    name = sanitize_input(data.get('name', ''), 100)
-    email = sanitize_input(data.get('email', ''), 100)
-    subject = sanitize_input(data.get('subject', ''), 200)
-    message = sanitize_input(data.get('message', ''), 2000)
-
-    if not name or not email or not subject or not message:
-        return jsonify({'success': False, 'message': 'Sab fields zaroori!'}), 400
-    if not validate_email(email):
-        return jsonify({'success': False, 'message': 'Email sahi nahi!'}), 400
-
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO contacts (name, email, subject, message, date) VALUES (?, ?, ?, ?, ?)",
-                   (name, email, subject, message, datetime.now().strftime('%Y-%m-%d %H:%M')))
-    conn.commit()
-    conn.close()
-    return jsonify({'success': True, 'message': 'Message bhej diya gaya! Hum aap se rabta karenge.'})
-
-
-@app.route('/api/contacts', methods=['GET'])
-def get_contacts():
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM contacts ORDER BY id DESC")
-    contacts = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return jsonify(contacts)
-
-
-# ============================================
-#   AUTHENTICATION
+#   🎯 LOGIN
 # ============================================
 @app.route('/api/login', methods=['POST'])
 def login():
-    ip = get_client_ip()
     data = request.get_json() or {}
     username = sanitize_input(data.get('username', ''), 50)
     password = data.get('password', '')
@@ -381,65 +309,90 @@ def login():
 
     conn = get_db()
     cursor = conn.cursor()
-    if ip not in ['127.0.0.1', 'localhost', '::1', 'unknown']:
-        cutoff = (datetime.now() - timedelta(minutes=BLOCK_DURATION_MINUTES)).strftime('%Y-%m-%d %H:%M:%S')
-        cursor.execute("SELECT COUNT(*) FROM login_attempts WHERE ip=? AND success=0 AND timestamp > ?", (ip, cutoff))
-        failed_count = cursor.fetchone()[0]
-        if failed_count >= MAX_LOGIN_ATTEMPTS:
-            block_ip(ip, "Too many failed logins")
-            conn.close()
-            return jsonify({'success': False, 'message': f'⚠️ IP blocked {BLOCK_DURATION_MINUTES} min.'}), 429
-
     cursor.execute("SELECT * FROM users WHERE username=?", (username,))
     user = cursor.fetchone()
-    success = False
-    if user and check_password_hash(user['password'], password):
-        success = True
-
-    cursor.execute("INSERT INTO login_attempts (ip, username, success, timestamp) VALUES (?, ?, ?, ?)",
-                   (ip, username, 1 if success else 0, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-    if success:
-        cursor.execute("DELETE FROM login_attempts WHERE ip=?", (ip,))
-    conn.commit()
     conn.close()
 
-    if success:
-        return jsonify({'success': True, 'user': {'id': user['id'], 'username': user['username'], 'role': user['role'], 'name': user['name']}})
+    if user and check_password_hash(user['password'], password):
+        return jsonify({
+            'success': True,
+            'user': {
+                'id': user['id'],
+                'username': user['username'],
+                'role': user['role'],
+                'name': user['name'],
+                'email': user['email'] if 'email' in user.keys() else ''
+            }
+        })
     else:
         return jsonify({'success': False, 'message': 'Galat credentials!'}), 401
 
 
+# ============================================
+#   🎯 SIGNUP (WITH EMAIL)
+# ============================================
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json() or {}
     username = sanitize_input(data.get('username', ''), 50)
     password = data.get('password', '')
     name = sanitize_input(data.get('name', ''), 100)
+    email = sanitize_input(data.get('email', '').lower().strip(), 100)
     role = data.get('role', 'student')
 
-    if not username or not password or not name:
-        return jsonify({'success': False, 'message': 'Sab fields zaroori!'}), 400
+    # Validation
+    if not username or not password or not name or not email:
+        return jsonify({'success': False, 'message': 'Sab fields zaroori hain!'}), 400
+
     if not validate_username(username):
-        return jsonify({'success': False, 'message': 'Username: letters, numbers, _ (3-20)'}), 400
+        return jsonify({'success': False, 'message': 'Username: sirf letters, numbers, underscore (3-20 chars)'}), 400
+
+    if not validate_email(email):
+        return jsonify({'success': False, 'message': 'Email sahi format mein nahi hai!'}), 400
+
     if len(password) < 3:
-        return jsonify({'success': False, 'message': 'Password kam se kam 3 chars!'}), 400
+        return jsonify({'success': False, 'message': 'Password kam se kam 3 characters!'}), 400
+
     if role not in ['student', 'teacher']:
         role = 'student'
 
+    # 🎯 TEACHER EMAIL CHECK
+    if role == 'teacher':
+        if email not in APPROVED_TEACHER_EMAILS:
+            return jsonify({
+                'success': False,
+                'message': 'Teacher account ke liye yeh email approved nahi hai. Admin se rabta karein.'
+            }), 403
+
     conn = get_db()
     cursor = conn.cursor()
+
+    # Username check
     cursor.execute("SELECT * FROM users WHERE username=?", (username,))
     if cursor.fetchone():
         conn.close()
-        return jsonify({'success': False, 'message': 'Username pehle se mojood!'}), 400
+        return jsonify({'success': False, 'message': 'Yeh username pehle se mojood hai!'}), 400
+
+    # Email check
+    cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+    if cursor.fetchone():
+        conn.close()
+        return jsonify({'success': False, 'message': 'Yeh email pehle se registered hai!'}), 400
 
     hashed_pw = generate_password_hash(password)
-    cursor.execute("INSERT INTO users (username, password, role, name, created_at) VALUES (?, ?, ?, ?, ?)",
-                   (username, hashed_pw, role, name, datetime.now().strftime('%Y-%m-%d %H:%M')))
+    cursor.execute(
+        "INSERT INTO users (username, password, role, name, email, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        (username, hashed_pw, role, name, email, datetime.now().strftime('%Y-%m-%d %H:%M'))
+    )
     conn.commit()
     new_id = cursor.lastrowid
     conn.close()
-    return jsonify({'success': True, 'message': 'Account ban gaya! Ab login karein.', 'user': {'id': new_id, 'username': username, 'role': role, 'name': name}})
+
+    return jsonify({
+        'success': True,
+        'message': 'Account ban gaya! Ab login karein.',
+        'user': {'id': new_id, 'username': username, 'role': role, 'name': name, 'email': email}
+    })
 
 
 # ============================================
@@ -700,26 +653,40 @@ def update_progress():
 
 
 # ============================================
-#   SECURITY APIs
+#   CONTACT
+# ============================================
+@app.route('/api/contact', methods=['POST'])
+def submit_contact():
+    data = request.get_json() or {}
+    name = sanitize_input(data.get('name', ''), 100)
+    email = sanitize_input(data.get('email', ''), 100)
+    subject = sanitize_input(data.get('subject', ''), 200)
+    message = sanitize_input(data.get('message', ''), 2000)
+
+    if not name or not email or not subject or not message:
+        return jsonify({'success': False, 'message': 'Sab fields zaroori!'}), 400
+    if not validate_email(email):
+        return jsonify({'success': False, 'message': 'Email sahi nahi!'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO contacts (name, email, subject, message, date) VALUES (?, ?, ?, ?, ?)",
+                   (name, email, subject, message, datetime.now().strftime('%Y-%m-%d %H:%M')))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True, 'message': 'Message bhej diya gaya! Hum aap se rabta karenge.'})
+
+
+# ============================================
+#   SECURITY APIs (Returns empty since security is disabled)
 # ============================================
 @app.route('/api/security/blocked', methods=['GET'])
 def get_blocked_ips():
-    conn = get_db()
-    cursor = conn.cursor()
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    cursor.execute("SELECT * FROM blocked_ips WHERE blocked_until > ? ORDER BY id DESC", (now,))
-    blocked = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return jsonify(blocked)
+    return jsonify([])
 
 
 @app.route('/api/security/blocked/<int:block_id>', methods=['DELETE'])
 def unblock_ip(block_id):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM blocked_ips WHERE id=?", (block_id,))
-    conn.commit()
-    conn.close()
     return jsonify({'success': True})
 
 
@@ -749,18 +716,19 @@ def get_security_stats():
     cursor = conn.cursor()
     cursor.execute("SELECT COUNT(*) FROM attack_logs")
     total_attacks = cursor.fetchone()[0]
-    today = datetime.now().strftime('%Y-%m-%d')
-    cursor.execute("SELECT COUNT(*) FROM attack_logs WHERE timestamp LIKE ?", (today + '%',))
+    cursor.execute("SELECT COUNT(*) FROM attack_logs WHERE timestamp LIKE ?", (datetime.now().strftime('%Y-%m-%d') + '%',))
     attacks_today = cursor.fetchone()[0]
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    cursor.execute("SELECT COUNT(*) FROM blocked_ips WHERE blocked_until > ?", (now,))
-    blocked_count = cursor.fetchone()[0]
-    cursor.execute("SELECT COUNT(*) FROM login_attempts WHERE success=0 AND timestamp LIKE ?", (today + '%',))
-    failed_logins = cursor.fetchone()[0]
-    cursor.execute("SELECT COUNT(*) FROM notifications WHERE is_read=0")
-    unread = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total_users = cursor.fetchone()[0]
     conn.close()
-    return jsonify({'total_attacks': total_attacks, 'attacks_today': attacks_today, 'blocked_ips': blocked_count, 'failed_logins_today': failed_logins, 'unread_notifications': unread})
+    return jsonify({
+        'total_attacks': total_attacks,
+        'attacks_today': attacks_today,
+        'blocked_ips': 0,
+        'failed_logins_today': 0,
+        'unread_notifications': 0,
+        'total_users': total_users
+    })
 
 
 # ============================================
@@ -782,16 +750,16 @@ AI_KNOWLEDGE = [
     {'keywords': ['admission', 'apply', 'enroll'],
      'response': "🎓 Admission ke liye Navbar mein 'Admission' tab hai. Form bharein."},
     {'keywords': ['login', 'signup', 'account'],
-     'response': "🔐 Login: student/123 ya teacher/123"},
+     'response': "🔐 Login: Apna username aur password daalein.<br>Naya account ke liye 'Sign Up' link use karein."},
     {'keywords': ['software', 'download'],
-     'response': "💻 'Software' tab mein VS Code, XAMPP, Photoshop, Python IDLE, Kali Linux sab hain."},
+     'response': "💻 'Software' tab mein VS Code, XAMPP, Photoshop, Python IDLE, Kali Linux, Git, Node.js, Docker sab hain."},
     {'keywords': ['test', 'mcq', 'exam'],
      'response': "📝 Course ke andar 'Take MCQ Test' button hai."},
     {'keywords': ['chat', 'teacher', 'contact'],
      'response': "💬 Login ke baad Student Dashboard mein 'Chat with Teacher' section hai."},
     {'keywords': ['attendance', 'hazri'],
      'response': "📅 Student Dashboard mein 'Attendance' card hai. Mark Present dabayein."},
-    {'keywords': ['about', 'developer', 'abdul', 'qadir'],
+    {'keywords': ['developer', 'abdul', 'qadir'],
      'response': "👨‍💻 Developer: Abdul Qadir Soomro<br>📧 24cse23@quest.edu.pk<br>📱 03359996428<br>📍 Larkana, Pakistan"},
     {'keywords': ['help', 'madad'],
      'response': "🎯 Poochiye: courses, fees, admission, login, software, developer info"},
@@ -823,26 +791,6 @@ def keyword_ai(msg):
     return "🤔 Mujhe exact jawab nahi pata. Poochiye: courses, fees, admission, login, software — ya teacher se chat karein."
 
 
-def try_gemini(prompt):
-    if not gemini_client:
-        return None
-    for model_name in GEMINI_MODELS:
-        try:
-            response = gemini_client.models.generate_content(model=model_name, contents=prompt)
-            if response and response.text:
-                print(f"✅ Gemini response from: {model_name}")
-                return response.text.strip()
-        except Exception as e:
-            err_str = str(e)
-            if 'quota' in err_str.lower() or 'not found' in err_str.lower() or 'no longer' in err_str.lower():
-                print(f"⚠️ {model_name} unavailable, trying next...")
-                continue
-            else:
-                print(f"⚠️ {model_name} error: {err_str[:100]}")
-                continue
-    return None
-
-
 @app.route('/api/ai', methods=['POST'])
 def ai_chat():
     data = request.get_json() or {}
@@ -858,30 +806,12 @@ def ai_smart():
     msg = sanitize_input(data.get('message', ''), 500)
     if not msg:
         return jsonify({'response': 'Kuch likhein!'})
-
-    prompt = f"""You are Questian Academy's helpful assistant.
-Answer in Roman Urdu (English letters, Urdu words) - short and friendly (2-3 sentences max).
-
-Academy info:
-- 12 Courses: Mobile App Dev, Cyber Security, Graphics, Pen Testing, Ethical Hacking, Python, AI/ML, Deep Learning, C#, C, C++, Java OOP
-- Features: Admission, Courses, Software, News, Login, Chat, Tests
-- Demo login: student/123 or teacher/123
-- Developer: Abdul Qadir Soomro (24cse23@quest.edu.pk, 03359996428, Larkana Pakistan)
-
-Question: {msg}
-
-Answer in Roman Urdu:"""
-
-    gemini_response = try_gemini(prompt)
-    if gemini_response:
-        return jsonify({'response': gemini_response, 'source': 'gemini'})
     return jsonify({'response': keyword_ai(msg), 'source': 'keyword'})
 
 
-# 🎯 init_db() ALWAYS run karein (Railway + Local dono ke liye)
-init_db()
-print("✅ Database initialized")
-
+# ============================================
+#   RUN
+# ============================================
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print("=" * 60)

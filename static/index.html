@@ -227,17 +227,18 @@
                 <input type="password" id="login-pass" placeholder="Password" required>
                 <button type="submit" class="btn-primary full-width">Login</button>
             </form>
-            <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
+                        <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
                 <input type="text" id="signup-name" placeholder="Full Name" required>
                 <input type="text" id="signup-user" placeholder="Username" required>
+                <input type="email" id="signup-email" placeholder="Email Address" required>
                 <input type="password" id="signup-pass" placeholder="Password (min 3 chars)" required>
-                <select id="signup-role"><option value="student">Student</option><option value="teacher">Teacher</option></select>
+                <select id="signup-role" onchange="onRoleChange()">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher (Approved Email Only)</option>
+                </select>
+                <p id="teacher-note" style="display:none; color:#DC2626; font-size:0.8rem; margin-top:5px;">⚠️ Teacher account ke liye approved email zaroori hai</p>
                 <button type="submit" class="btn-success full-width">Create Account</button>
             </form>
-            <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#4F46E5;font-weight:600;cursor:pointer;text-decoration:underline;">Sign Up</span></p>
-            <p class="demo-text">Demo: student/123 or teacher/123</p>
-        </div>
-    </div>
 
     <!-- STUDENT DASHBOARD -->
     <div class="container" id="student-dashboard">

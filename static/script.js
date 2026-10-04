@@ -3,7 +3,7 @@
 //   Developer: Abdul Qadir Soomro
 // ============================================
 
-const API_URL = '/api';
+const API_URL = 'http://127.0.0.1:5000/api';
 let currentUser = null;
 try { const s = localStorage.getItem('currentUser'); if (s) currentUser = JSON.parse(s); } catch(e) { localStorage.removeItem('currentUser'); }
 
@@ -299,18 +299,49 @@ async function handleSignup(e) {
     e.preventDefault();
     const name = document.getElementById('signup-name').value.trim();
     const username = document.getElementById('signup-user').value.trim();
+    const email = document.getElementById('signup-email').value.trim().toLowerCase();
     const password = document.getElementById('signup-pass').value.trim();
     const role = document.getElementById('signup-role').value;
-    if (!name || !username || !password) return alert('Sab fields bharein!');
+
+    if (!name || !username || !email || !password) {
+        return alert('Sab fields bharein!');
+    }
+
+    if (password.length < 3) {
+        return alert('Password kam se kam 3 characters ka ho!');
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return alert('Email sahi format mein likhein!');
+    }
+
     try {
         const r = await fetch(API_URL + '/signup', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name, username, password, role})
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, username, email, password, role})
         });
         const d = await r.json();
-        alert(d.success ? '✅ ' + d.message : '❌ ' + d.message);
-        if (d.success) { document.getElementById('signup-form').reset(); toggleAuthForm(); }
-    } catch(err) { alert('Server error!'); }
+        if (d.success) {
+            alert('✅ ' + d.message + '\n\nAb login karein: ' + username);
+            document.getElementById('signup-form').reset();
+            toggleAuthForm();
+        } else {
+            alert('❌ ' + d.message);
+        }
+    } catch(err) {
+        alert('Server error! Dobara try karein.');
+        console.error(err);
+    }
+}
+
+function onRoleChange() {
+    const role = document.getElementById('signup-role').value;
+    const note = document.getElementById('teacher-note');
+    if (note) {
+        note.style.display = role === 'teacher' ? 'block' : 'none';
+    }
 }
 
 function toggleAuthForm() {
@@ -758,75 +789,6 @@ window.addEventListener('load', function() {
     }
 });
 
-document.addEventListener('click', function() {
-    if (!voicesLoaded) loadVoices();
-}, { once: true });
-// 🎯 SIMPLE AI FIX
-window.sendAIMessage = async function() {
-    const input = document.getElementById('ai-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-    addAI('user', msg);
-    input.value = '';
-    try {
-        const r = await fetch('/api/ai', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({message: msg})
-        });
-        const d = await r.json();
-        addAI('bot', d.response || 'Reply nahi mila');
-    } catch(err) {
-        addAI('bot', 'Server error');
-    }
-};
-
-// 🎯 CLIENT-SIDE AI (Instant, no backend needed)
-window.sendAIMessage = function() {
-    const input = document.getElementById('ai-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-    addAI('user', msg);
-    input.value = '';
-    
-    const m = msg.toLowerCase();
-    let reply = '';
-    
-    if (m.includes('hello') || m.includes('hi') || m.includes('salam') || m.includes('assalam') || m.includes('aoa')) {
-        reply = 'Assalam-o-Alaikum! 👋 Main Questian AI hoon. Poochiye:<br>• Courses<br>• Fees<br>• Admission<br>• Software<br>• Login';
-    } else if (m.includes('python')) {
-        reply = '🐍 Python ek aasan aur powerful language hai. AI, Data Science, Web Development mein use hoti hai. "Python Language" course zero se shuru karta hai.';
-    } else if (m.includes('course') || m.includes('courses')) {
-        reply = '📚 Hamare paas 12 courses hain:<br>1. Mobile App Development<br>2. Cyber Security<br>3. Graphics Designing<br>4. Penetration Testing<br>5. Ethical Hacking<br>6. Python<br>7. AI & ML<br>8. Deep Learning<br>9. C#<br>10. C<br>11. C++<br>12. Java OOP';
-    } else if (m.includes('ai') || m.includes('machine learning') || m.includes('ml')) {
-        reply = '🤖 AI aur ML course computers ko smart banane ke baare mein hai. Isme models train karna sikhaya jata hai.';
-    } else if (m.includes('cyber') || m.includes('security') || m.includes('hacking')) {
-        reply = '🔒 Cyber Security aur Ethical Hacking course systems ko secure karna sikhata hai. Penetration Testing bhi shamil hai.';
-    } else if (m.includes('fee') || m.includes('fees') || m.includes('paisa') || m.includes('price')) {
-        reply = '💰 Fees bohat affordable hai. Exact details ke liye Admission form bharein ya teacher se chat karein.';
-    } else if (m.includes('admission') || m.includes('apply')) {
-        reply = '🎓 Admission ke liye Navbar mein "Admission" tab hai. Form bharein aur submit karein!';
-    } else if (m.includes('login') || m.includes('signup')) {
-        reply = '🔐 Login: student/123 ya teacher/123<br><br>Naya account ke liye "Sign Up" link use karein.';
-    } else if (m.includes('software') || m.includes('download')) {
-        reply = '💻 "Software" tab mein VS Code, XAMPP, Photoshop, Python IDLE, Kali Linux, Git, Node.js, Docker sab hain.';
-    } else if (m.includes('test') || m.includes('mcq')) {
-        reply = '📝 Course ke andar "Take MCQ Test" button hai. Test ke baad foran result aata hai.';
-    } else if (m.includes('attendance') || m.includes('hazri')) {
-        reply = '📅 Student Dashboard mein "Attendance" card hai. "Mark Present" button dabayein.';
-    } else if (m.includes('developer') || m.includes('abdul') || m.includes('qadir')) {
-        reply = '👨‍💻 Developer: Abdul Qadir Soomro<br>📧 24cse23@quest.edu.pk<br>📱 03359996428<br>📍 Larkana, Pakistan';
-    } else if (m.includes('teacher') || m.includes('contact')) {
-        reply = '💬 Login karne ke baad Student Dashboard mein "Chat with Teacher" section hai.';
-    } else if (m.includes('help') || m.includes('madad')) {
-        reply = '🎯 Poochiye: courses, fees, admission, login, software, attendance, developer info';
-    } else if (m.includes('thanks') || m.includes('shukriya')) {
-        reply = 'Aapka khair maqdam! 😊';
-    } else if (m.includes('bye')) {
-        reply = 'Allah Hafiz! 👋 Apna khayal rakhein!';
-    } else {
-        reply = '🤔 Mujhe exact jawab nahi pata. Poochiye:<br>• Courses<br>• Fees<br>• Admission<br>• Login<br>• Software<br>• Developer';
-    }
-    
-    setTimeout(() => addAI('bot', reply), 400);
-};
+document.addEventListener('click', () => {
+        if (!voicesLoaded) loadVoices();
+} )
