@@ -1,6 +1,7 @@
 """
 QUESTIAN ACADEMY - Backend
 Developer: Abdul Qadir Soomro
+Email: Brevo API
 """
 
 from flask import Flask, request, jsonify, send_from_directory
@@ -10,10 +11,8 @@ import sqlite3
 import re
 import os
 import random
-import smtplib
 import json
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import urllib.request
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
@@ -23,12 +22,17 @@ app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'questian-secret-2026')
 CORS(app, origins=['*'])
 
-# Email Config
+# ============================================
+#   EMAIL CONFIG (BREVO)
+# ============================================
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY')
 EMAIL_USER = os.environ.get('EMAIL_USER')
-EMAIL_PASS = os.environ.get('EMAIL_PASS')
-EMAIL_ENABLED = bool(EMAIL_USER and EMAIL_PASS)
+SENDER_NAME = os.environ.get('SENDER_NAME', 'Questian Academy')
+EMAIL_ENABLED = bool(BREVO_API_KEY and EMAIL_USER)
 
-# Gemini
+# ============================================
+#   GEMINI AI
+# ============================================
 GEMINI_KEY = os.environ.get('GEMINI_API_KEY')
 gemini_client = None
 if GEMINI_KEY:
@@ -40,7 +44,6 @@ if GEMINI_KEY:
         print(f"Gemini error: {str(e)[:100]}")
 
 DATABASE = 'academy.db'
-
 APPROVED_TEACHER_EMAILS = ['24cse23@quest.edu.pk']
 
 
@@ -196,11 +199,11 @@ print("Database initialized")
 
 
 # ============================================
-#   EMAIL FUNCTIONS
+#   BREVO EMAIL FUNCTION
 # ============================================
 
 def send_otp_email(to_email, otp, purpose):
-    """Send OTP via Gmail SMTP"""
+    """Send OTP via Brevo HTTP API (Railway-compatible)"""
     if not EMAIL_ENABLED:
         print("Email not configured")
         return False
@@ -212,7 +215,7 @@ def send_otp_email(to_email, otp, purpose):
 <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f4f7;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 20px;">
 <tr><td align="center">
-<table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+<table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;border:1px solid #e5e7eb;">
 <tr>
 <td style="background:#1e3a8a;padding:24px 30px;">
 <h2 style="color:#ffffff;margin:0;font-size:20px;font-weight:600;">Questian Academy</h2>
@@ -226,12 +229,12 @@ def send_otp_email(to_email, otp, purpose):
 <div style="font-size:36px;font-weight:700;letter-spacing:8px;color:#1e3a8a;">{otp}</div>
 </div>
 <p style="color:#6b7280;font-size:13px;margin:0;">Yeh code <strong>5 minute</strong> mein expire ho jayega.</p>
-<p style="color:#6b7280;font-size:13px;margin:20px 0 0 0;">Agar aapne yeh request nahi ki, toh email ignore karein.</p>
+<p style="color:#6b7280;font-size:13px;margin:20px 0 0 0;">Agar aapne yeh request nahi ki, email ignore karein.</p>
 </td>
 </tr>
 <tr>
 <td style="background:#f9fafb;padding:20px 30px;border-top:1px solid #e5e7eb;">
-<p style="color:#9ca3af;font-size:12px;margin:0;">© 2026 Questian Academy. All rights reserved.</p>
+<p style="color:#9ca3af;font-size:12px;margin:0;">2026 Questian Academy. All rights reserved.</p>
 </td>
 </tr>
 </table>
@@ -241,19 +244,28 @@ def send_otp_email(to_email, otp, purpose):
 </html>"""
     
     try:
-        msg = MIMEMultipart('alternative')
-        msg['From'] = f"Questian Academy <{EMAIL_USER}>"
-        msg['To'] = to_email
-        msg['Subject'] = f"Questian Academy - {subject_text} Code"
-        msg.attach(MIMEText(html, 'html'))
+        payload = json.dumps({
+            "sender": {"name": SENDER_NAME, "email": EMAIL_USER},
+            "to": [{"email": to_email}],
+            "subject": f"Questian Academy - {subject_text} Code",
+            "htmlContent": html
+        }).encode('utf-8')
         
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=10)
-        server.starttls()
-        server.login(EMAIL_USER, EMAIL_PASS)
-        server.send_message(msg)
-        server.quit()
-        print(f"OTP sent to {to_email}")
-        return True
+        req = urllib.request.Request(
+            "https://api.brevo.com/v3/smtp/email",
+            data=payload,
+            headers={
+                "accept": "application/json",
+                "content-type": "application/json",
+                "api-key": BREVO_API_KEY
+            },
+            method="POST"
+        )
+        
+        with urllib.request.urlopen(req, timeout=15) as response:
+            result = response.read().decode('utf-8')
+            print(f"Email sent to {to_email}")
+            return True
     except Exception as e:
         print(f"Email error: {e}")
         return False
@@ -321,7 +333,6 @@ def signup_send_otp():
         conn.close()
         return jsonify({'success': False, 'message': 'Email pehle se registered'}), 400
     
-    # Delete old pending OTPs for this email
     c.execute("DELETE FROM otp_codes WHERE email=? AND purpose='signup'", (email,))
     
     otp = generate_otp()
@@ -334,7 +345,7 @@ def signup_send_otp():
     conn.close()
     
     if not send_otp_email(email, otp, 'signup'):
-        return jsonify({'success': False, 'message': 'Email send nahi hui. Config check karein.'}), 500
+        return jsonify({'success': False, 'message': 'Email send nahi hui. Dobara try karein.'}), 500
     
     return jsonify({'success': True, 'message': f'Code bhej diya {email} par'})
 
@@ -358,11 +369,10 @@ def signup_verify():
     
     if not row:
         conn.close()
-        return jsonify({'success': False, 'message': 'Code galat ya expire ho gaya'}), 400
+        return jsonify({'success': False, 'message': 'Code galat ya expire'}), 400
     
     user_data = json.loads(row['user_data'])
     
-    # Check again
     c.execute("SELECT id FROM users WHERE username=?", (user_data['username'],))
     if c.fetchone():
         conn.close()
@@ -419,16 +429,15 @@ def login_send_otp():
     expires = (datetime.now() + timedelta(minutes=5)).strftime('%Y-%m-%d %H:%M:%S')
     
     c.execute("INSERT INTO otp_codes (email, code, purpose, user_data, expires_at, used) VALUES (?, ?, ?, ?, ?, 0)",
-              (email, otp, 'login', json.dumps({'user_id': user['id']}), expires))
+              (email, otp, 'login', json.dumps({'user_id': user['id'], 'email': email}), expires))
     conn.commit()
     conn.close()
     
     if not send_otp_email(email, otp, 'login'):
         return jsonify({'success': False, 'message': 'Email send nahi hui'}), 500
     
-    # Mask email for display
     masked = email[:2] + '***' + email[email.find('@'):]
-    return jsonify({'success': True, 'message': f'Code bhej diya', 'email': masked})
+    return jsonify({'success': True, 'message': f'Code bhej diya {masked} par', 'email': email})
 
 
 @app.route('/api/login/verify', methods=['POST'])
@@ -753,7 +762,7 @@ def submit_contact():
     conn.commit()
     conn.close()
     return jsonify({'success': True, 'message': 'Message bhej diya'})
-    
+
 
 # ============================================
 #   SECURITY APIs
@@ -785,7 +794,7 @@ def sec_stats():
     courses = c.fetchone()[0]
     conn.close()
     return jsonify({'total_attacks': 0, 'attacks_today': 0, 'blocked_ips': 0,
-                    'failed_logins_today': 0, 'unread_notifications': 0, 'total_users': users})
+                    'failed_logins_today': 0, 'unread_notifications': 0, 'total_users': users, 'total_courses': courses})
 
 
 # ============================================
@@ -837,6 +846,11 @@ def ai_smart():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    print(f"Starting on port {port}")
-    print(f"Email: {'Enabled' if EMAIL_ENABLED else 'Disabled'}")
+    print("=" * 60)
+    print("QUESTIAN ACADEMY - Backend")
+    print("=" * 60)
+    print(f"Email: {'Enabled (Brevo)' if EMAIL_ENABLED else 'Disabled'}")
+    print(f"Gemini: {'Active' if gemini_client else 'Keyword only'}")
+    print(f"Server: http://0.0.0.0:{port}")
+    print("=" * 60)
     app.run(debug=False, host='0.0.0.0', port=port)
