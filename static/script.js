@@ -1,27 +1,19 @@
 // ============================================
 //   QUESTIAN ACADEMY - script.js
-//   Developer: Abdul Qadir Soomro
 // ============================================
 
 const API_URL = '/api';
 let currentUser = null;
 try { const s = localStorage.getItem('currentUser'); if (s) currentUser = JSON.parse(s); } catch(e) { localStorage.removeItem('currentUser'); }
 
-// ============================================
-//   DEVELOPER INFO
-// ============================================
 var DEVELOPER_INFO = {
     name: 'Abdul Qadir Soomro',
     role: 'Full Stack Web Developer • Penetration Tester • AI & ML Engineer',
     email: '24cse23@quest.edu.pk',
     phone: '03359996428',
-    location: 'Larkana, Pakistan',
-    bio: 'Full Stack Developer, Penetration Tester aur AI & Machine Learning Engineer.'
+    location: 'Larkana, Pakistan'
 };
 
-// ============================================
-//   YOUTUBE VIDEO LINKS
-// ============================================
 const VIDEO_LINKS = {
     'Mobile Application Development': 'https://youtu.be/u64gyCdqawU',
     'Cyber Security': 'https://youtu.be/v3iUx2SNspY',
@@ -39,43 +31,34 @@ const VIDEO_LINKS = {
 
 function extractYouTubeID(url) {
     if (!url) return 'dQw4w9WgXcQ';
-    var liveMatch = url.match(/youtube\.com\/live\/([^?&#\s]+)/);
-    if (liveMatch) return liveMatch[1];
-    var shortMatch = url.match(/youtu\.be\/([^?&#\s]+)/);
-    if (shortMatch) return shortMatch[1];
-    var watchMatch = url.match(/[?&]v=([^?&#\s]+)/);
-    if (watchMatch) return watchMatch[1];
-    var embedMatch = url.match(/youtube\.com\/embed\/([^?&#\s]+)/);
-    if (embedMatch) return embedMatch[1];
+    var m = url.match(/youtube\.com\/live\/([^?&#\s]+)/);
+    if (m) return m[1];
+    m = url.match(/youtu\.be\/([^?&#\s]+)/);
+    if (m) return m[1];
+    m = url.match(/[?&]v=([^?&#\s]+)/);
+    if (m) return m[1];
     if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
     return 'dQw4w9WgXcQ';
 }
 
 // ============================================
-//   VOICE SYSTEM
+//   VOICE
 // ============================================
 let femaleVoice = null;
 let voiceEnabled = true;
-let voicesLoaded = false;
 
 function loadVoices() {
     if (!('speechSynthesis' in window)) return;
     var voices = speechSynthesis.getVoices();
-    if (voices.length === 0) return;
-    voicesLoaded = true;
-    femaleVoice = 
-        voices.find(v => v.lang === 'hi-IN' && v.name.toLowerCase().includes('female')) ||
-        voices.find(v => v.lang === 'hi-IN') ||
-        voices.find(v => v.lang.startsWith('hi')) ||
-        voices.find(v => v.name.toLowerCase().includes('female')) ||
-        voices.find(v => v.lang === 'en-IN') ||
-        voices[0];
+    if (!voices.length) return;
+    femaleVoice = voices.find(v => v.lang === 'hi-IN') ||
+                  voices.find(v => v.name.toLowerCase().includes('female')) ||
+                  voices[0];
 }
 if ('speechSynthesis' in window) {
     loadVoices();
     speechSynthesis.onvoiceschanged = loadVoices;
-    setTimeout(loadVoices, 200);
-    setTimeout(loadVoices, 1000);
+    setTimeout(loadVoices, 500);
 }
 
 function stopVoice() { if ('speechSynthesis' in window) speechSynthesis.cancel(); }
@@ -86,7 +69,7 @@ function speakUrdu(text) {
     if (!femaleVoice) loadVoices();
     speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.8; u.pitch = 1.4; u.volume = 1;
+    u.rate = 0.85; u.pitch = 1.3;
     if (femaleVoice) { u.voice = femaleVoice; u.lang = femaleVoice.lang; }
     else u.lang = 'hi-IN';
     setTimeout(function() { speechSynthesis.speak(u); }, 100);
@@ -95,13 +78,18 @@ function speakUrdu(text) {
 function toggleVoice() {
     voiceEnabled = !voiceEnabled;
     var btn = document.getElementById('voice-toggle-btn');
-    if (!voiceEnabled) { stopVoice(); if (btn) { btn.innerText = '🔇 OFF'; btn.style.background = '#FEE2E2'; btn.style.color = '#DC2626'; } }
-    else { if (btn) { btn.innerText = '🔊 ON'; btn.style.background = '#E0E7FF'; btn.style.color = '#4F46E5'; } speakUrdu("Voice on ho gayi hai"); }
+    if (!voiceEnabled) {
+        stopVoice();
+        if (btn) { btn.innerText = 'OFF'; btn.style.background = '#FEE2E2'; btn.style.color = '#DC2626'; }
+    } else {
+        if (btn) { btn.innerText = 'ON'; btn.style.background = '#E0E7FF'; btn.style.color = '#4F46E5'; }
+        speakUrdu("Voice on ho gayi hai");
+    }
 }
 
 function admissionVoiceGuide() {
-    if (!voiceEnabled) { alert('Voice OFF hai!'); return; }
-    speakUrdu("Assalam o alaikum. Main aapki admission form bharne mein madad karungi. Pehle apna poora naam likhein. Phir email. Uske baad phone number. Aakhir mein course select karein. Aur submit dabayein.");
+    if (!voiceEnabled) { alert('Voice OFF hai'); return; }
+    speakUrdu("Assalam o alaikum. Admission form mein apna naam, email, phone aur course select karein.");
 }
 
 function admissionFieldGuide(field) {
@@ -176,7 +164,7 @@ function renderFilteredCourses() {
         card.innerHTML = '<img src="' + img + '" class="course-image" onerror="this.src=\'https://via.placeholder.com/400x200\'">' +
             '<div class="course-content"><h3>' + x.title + '</h3>' +
             '<p class="course-desc">' + (x.description || '') + '</p>' +
-            '<button class="btn-primary" style="width:100%;margin-top:15px;">🚀 Start Learning</button></div>';
+            '<button class="btn-primary" style="width:100%;margin-top:15px;">Start Learning</button></div>';
         card.querySelector('button').onclick = function() { openCourse(x.id, x.title); };
         list.appendChild(card);
     });
@@ -195,6 +183,7 @@ function showView(id) {
     });
     target.classList.add('active');
     target.style.display = 'block';
+    
     if (id === 'courses') loadCourses();
     if (id === 'software') loadSoftware();
     if (id === 'news') loadNews();
@@ -202,8 +191,11 @@ function showView(id) {
     if (id === 'student-dashboard') loadStudentDash();
     if (id === 'teacher-dashboard') loadTeacherDash();
     if (id === 'home') setTimeout(animateStats, 300);
+    
     if (id === 'admission') {
-        setTimeout(function() { if (voiceEnabled) speakUrdu("Admission form khul gaya"); }, 500);
+        setTimeout(function() {
+            if (voiceEnabled) speakUrdu("Admission form khul gaya");
+        }, 500);
     }
 }
 
@@ -217,7 +209,6 @@ function loadAbout() {
     el = document.getElementById('dev-email'); if (el) { el.innerText = d.email; el.href = 'mailto:' + d.email; }
     el = document.getElementById('dev-phone'); if (el) { el.innerText = d.phone; el.href = 'tel:' + d.phone; }
     el = document.getElementById('dev-location'); if (el) el.innerText = d.location;
-    el = document.getElementById('dev-bio'); if (el) el.innerText = d.bio;
     el = document.querySelector('.dev-role'); if (el) el.innerText = d.role;
     el = document.getElementById('dev-avatar'); if (el) el.innerText = d.name.charAt(0).toUpperCase();
 }
@@ -228,26 +219,27 @@ async function submitContact(e) {
     var email = document.getElementById('contact-email').value.trim();
     var subject = document.getElementById('contact-subject').value.trim();
     var message = document.getElementById('contact-message').value.trim();
-    if (!name || !email || !subject || !message) return alert('Sab fields bharein!');
+    if (!name || !email || !subject || !message) return alert('Saare fields bharein');
     try {
         var r = await fetch(API_URL + '/contact', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name: name, email: email, subject: subject, message: message})
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, email, subject, message})
         });
         var d = await r.json();
-        alert('✅ ' + (d.message || 'Message send ho gaya!'));
-        e.target.reset();
-    } catch(err) { alert('❌ Message send nahi hua.'); }
+        alert(d.success ? 'Message bhej diya' : 'Error');
+        if (d.success) e.target.reset();
+    } catch(err) { alert('Error'); }
 }
 
 function openPolicy(policy) {
     var messages = {
-        'Disclaimer': 'Yeh website educational purposes ke liye hai. Sab courses aur content informational hain.',
-        'Privacy Policy': 'Aapki privacy hamare liye ahem hai. Hum aapka data kisi teesri party se share nahi karte.',
-        'Terms of Service': 'Website use karne ke liye aap in terms se agree karte hain:\n1. Koi illegal activity nahi\n2. Content copy nahi karein',
-        'Sitemap': 'Pages: Home, Admission, Courses, Software, News, About, Login'
+        'Disclaimer': 'Yeh website educational purposes ke liye hai.',
+        'Privacy Policy': 'Aapki privacy hamare liye ahem hai.',
+        'Terms of Service': 'Website use karne ke liye in terms se agree karein.',
+        'Sitemap': 'Home, Admission, Courses, Software, News, About, Login'
     };
-    alert('📄 ' + policy + ':\n\n' + (messages[policy] || 'Jald available!'));
+    alert(policy + ':\n\n' + (messages[policy] || 'Jald available'));
 }
 
 // ============================================
@@ -258,19 +250,64 @@ function toggleProfileMenu(e) {
     var menu = document.getElementById('profile-dropdown');
     if (menu) menu.classList.toggle('hidden');
 }
+
 document.addEventListener('click', function(e) {
     var menu = document.getElementById('profile-dropdown');
     var btn = document.getElementById('profile-btn');
     if (!menu || !btn) return;
     if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.add('hidden');
 });
-function openDashboard() { document.getElementById('profile-dropdown').classList.add('hidden'); if (currentUser) showView(currentUser.role + '-dashboard'); }
-function openSettings() { document.getElementById('profile-dropdown').classList.add('hidden'); alert('⚙️ Settings page abhi kaam kar raha hai.'); }
-function openPayment() { document.getElementById('profile-dropdown').classList.add('hidden'); alert('💳 Payment system abhi kaam kar raha hai.'); }
-function openCertificate() { document.getElementById('profile-dropdown').classList.add('hidden'); alert('🎓 Certificate system abhi kaam kar raha hai.'); }
+
+function openDashboard() {
+    document.getElementById('profile-dropdown').classList.add('hidden');
+    if (currentUser) showView(currentUser.role + '-dashboard');
+}
+
+function openSettings() {
+    document.getElementById('profile-dropdown').classList.add('hidden');
+    alert('Settings page jald available hoga');
+}
+
+function openPayment() {
+    document.getElementById('profile-dropdown').classList.add('hidden');
+    alert('Payment system jald available hoga');
+}
+
+function openCertificate() {
+    document.getElementById('profile-dropdown').classList.add('hidden');
+    alert('Certificate system jald available hoga');
+}
 
 // ============================================
-//   SIGNUP WITH EMAIL OTP
+//   LOGIN WITH OTP
+// ============================================
+async function handleLogin(e) {
+    e.preventDefault();
+    stopVoice();
+    const username = document.getElementById('login-user').value.trim();
+    const password = document.getElementById('login-pass').value.trim();
+    if (!username || !password) return alert('Username aur password daalein');
+    
+    try {
+        const r = await fetch(API_URL + '/login/send-otp', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password})
+        });
+        const d = await r.json();
+        
+        if (!d.success) return alert('❌ ' + d.message);
+        
+        window.pendingLoginEmail = d.email;
+        alert('✅ ' + d.message);
+        showOtpScreen('login');
+    } catch(err) {
+        alert('Server error');
+    }
+}
+
+// ============================================
+//   SIGNUP WITH OTP
 // ============================================
 async function handleSignup(e) {
     e.preventDefault();
@@ -293,12 +330,11 @@ async function handleSignup(e) {
         
         if (!d.success) return alert('❌ ' + d.message);
         
-        window.pendingSignup = {name, username, email, password, role};
-        alert('✅ ' + d.message + '\n\nApna email check karein.');
-        showOtpScreen('signup', email);
+        window.pendingSignup = {email};
+        alert('✅ ' + d.message);
+        showOtpScreen('signup');
     } catch(err) {
         alert('Server error');
-        console.error(err);
     }
 }
 
@@ -309,64 +345,33 @@ function onRoleChange() {
 }
 
 // ============================================
-//   LOGIN WITH EMAIL OTP
+//   OTP SCREEN
 // ============================================
-async function handleLogin(e) {
-    e.preventDefault();
-    const username = document.getElementById('login-user').value.trim();
-    const password = document.getElementById('login-pass').value.trim();
-    if (!username || !password) return alert('Username aur password daalein');
-
-    try {
-        const r = await fetch(API_URL + '/login/send-otp', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username, password})
-        });
-        const d = await r.json();
-        
-        if (!d.success) return alert('❌ ' + d.message);
-        
-        alert('✅ ' + d.message + '\n\nEmail check karein: ' + (d.email || ''));
-        showOtpScreen('login', '');
-    } catch(err) {
-        alert('Server error');
-        console.error(err);
-    }
-}
-
-// ============================================
-//   OTP VERIFICATION
-// ============================================
-function showOtpScreen(purpose, email) {
-    document.getElementById('login-view').style.display = 'none';
-    const container = document.getElementById('login-view');
-    container.classList.remove('active');
+function showOtpScreen(purpose) {
+    document.querySelectorAll('.container').forEach(el => { el.classList.remove('active'); el.style.display = 'none'; });
     
-    let otpSection = document.getElementById('otp-view');
-    if (!otpSection) {
-        otpSection = document.createElement('div');
-        otpSection.id = 'otp-view';
-        otpSection.className = 'container';
-        document.body.insertBefore(otpSection, document.querySelector('.main-footer'));
+    let otpView = document.getElementById('otp-view');
+    if (!otpView) {
+        otpView = document.createElement('div');
+        otpView.id = 'otp-view';
+        otpView.className = 'container';
+        document.body.insertBefore(otpView, document.querySelector('.main-footer'));
     }
     
-    otpSection.style.display = 'block';
-    otpSection.classList.add('active');
+    otpView.style.display = 'block';
+    otpView.classList.add('active');
     
     const title = purpose === 'signup' ? 'Verify Email' : 'Login Verification';
-    const info = purpose === 'signup' 
-        ? 'Aapke email par 6-digit code bheja gaya hai. Signup complete karne ke liye code daalein.'
-        : 'Aapke email par 6-digit code bheja gaya hai. Login complete karne ke liye code daalein.';
+    const info = 'Aapke email par 6-digit code bheja gaya hai. Code daalein:';
     
-    otpSection.innerHTML = `
-        <div class="otp-container">
-            <h2>${title}</h2>
-            <p class="otp-info">${info}</p>
-            <input type="text" id="otp-input" placeholder="Enter 6-digit code" maxlength="6" 
-                   style="text-align:center; font-size:1.5rem; letter-spacing:8px; font-weight:600;">
-            <button onclick="verifyOtp('${purpose}')" class="btn-primary full-width">Verify</button>
-            <p class="otp-link" onclick="cancelOtp()">← Cancel</p>
+    otpView.innerHTML = `
+        <div style="max-width:400px; margin:40px auto; text-align:center; padding:0 20px;">
+            <h2 style="margin-bottom:10px;">${title}</h2>
+            <p style="color:#6b7280; font-size:0.9rem; margin-bottom:24px;">${info}</p>
+            <input type="text" id="otp-input" placeholder="000000" maxlength="6" 
+                   style="text-align:center; font-size:1.5rem; letter-spacing:8px; font-weight:600; padding:14px;">
+            <button onclick="verifyOtp('${purpose}')" class="btn-primary full-width" style="margin-top:12px;">Verify Code</button>
+            <p style="color:#6b7280; font-size:0.85rem; margin-top:15px; cursor:pointer;" onclick="cancelOtp()">← Cancel</p>
         </div>
     `;
     
@@ -374,13 +379,9 @@ function showOtpScreen(purpose, email) {
 }
 
 function cancelOtp() {
-    const otpSection = document.getElementById('otp-view');
-    if (otpSection) {
-        otpSection.style.display = 'none';
-        otpSection.classList.remove('active');
-    }
-    document.getElementById('login-view').classList.add('active');
-    document.getElementById('login-view').style.display = 'block';
+    const otpView = document.getElementById('otp-view');
+    if (otpView) { otpView.style.display = 'none'; otpView.classList.remove('active'); }
+    showView('login');
 }
 
 async function verifyOtp(purpose) {
@@ -388,58 +389,93 @@ async function verifyOtp(purpose) {
     if (!code || code.length !== 6) return alert('6-digit code daalein');
     
     const url = purpose === 'signup' ? '/signup/verify' : '/login/verify';
-    let body;
+    const email = purpose === 'signup' ? window.pendingSignup.email : window.pendingLoginEmail;
     
-    if (purpose === 'signup') {
-        body = {email: window.pendingSignup.email, code};
-    } else {
-        body = {email: window.pendingLoginEmail || '', code};
-    }
-    
-    // Get login email from server response
-    if (purpose === 'login' && !body.email) {
-        // Retry: use any stored value
-        alert('Session error. Dobara try karein.');
-        cancelOtp();
-        return;
-    }
+    if (!email) { alert('Session error'); cancelOtp(); return; }
     
     try {
         const r = await fetch(API_URL + url, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
+            body: JSON.stringify({email, code})
         });
         const d = await r.json();
         
         if (!d.success) return alert('❌ ' + d.message);
         
-        // Success
         currentUser = d.user;
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         
         cancelOtp();
-        document.getElementById('login-view').classList.add('active');
-        document.getElementById('login-view').style.display = 'block';
-        
         updateNav();
         showView(currentUser.role + '-dashboard');
         alert('✅ Login successful. Welcome ' + currentUser.name);
     } catch(err) {
-        alert('Verify error: ' + err.message);
+        alert('Verify error');
     }
 }
 
+// ============================================
+//   FORGOT PASSWORD
+// ============================================
+function showForgotPassword() { showView('forgot'); }
 
-
-function onRoleChange() {
-    const role = document.getElementById('signup-role').value;
-    const note = document.getElementById('teacher-note');
-    if (note) {
-        note.style.display = role === 'teacher' ? 'block' : 'none';
-    }
+async function handleForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+    if (!email) return alert('Email daalein');
+    
+    const btn = e.target.querySelector('button');
+    btn.disabled = true; btn.innerText = 'Sending...';
+    
+    try {
+        const r = await fetch(API_URL + '/forgot-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email})
+        });
+        const d = await r.json();
+        
+        alert(d.success ? '✅ ' + d.message : '❌ ' + d.message);
+        if (d.success) { e.target.reset(); showView('login'); }
+    } catch(err) { alert('Server error'); }
+    finally { btn.disabled = false; btn.innerText = 'Send Reset Link'; }
 }
 
+async function handleResetPassword(e) {
+    e.preventDefault();
+    const password = document.getElementById('reset-password').value;
+    const confirm = document.getElementById('reset-confirm').value;
+    
+    if (password.length < 3) return alert('Password kam se kam 3 characters');
+    if (password !== confirm) return alert('Dono passwords match nahi');
+    
+    const token = new URLSearchParams(window.location.search).get('token');
+    if (!token) return alert('Reset token nahi mila');
+    
+    const btn = e.target.querySelector('button');
+    btn.disabled = true; btn.innerText = 'Resetting...';
+    
+    try {
+        const r = await fetch(API_URL + '/reset-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({token, password})
+        });
+        const d = await r.json();
+        
+        alert(d.success ? '✅ ' + d.message : '❌ ' + d.message);
+        if (d.success) {
+            window.history.replaceState({}, document.title, '/');
+            showView('login');
+        }
+    } catch(err) { alert('Server error'); }
+    finally { btn.disabled = false; btn.innerText = 'Reset Password'; }
+}
+
+// ============================================
+//   AUTH TOGGLE
+// ============================================
 function toggleAuthForm() {
     const lf = document.getElementById('login-form');
     const sf = document.getElementById('signup-form');
@@ -447,12 +483,12 @@ function toggleAuthForm() {
     const sw = document.getElementById('auth-switch');
     if (lf.classList.contains('hidden')) {
         lf.classList.remove('hidden'); sf.classList.add('hidden');
-        if (title) title.innerText = 'Login Portal';
-        if (sw) sw.innerHTML = 'Don\'t have an account? <span onclick="toggleAuthForm()" style="color:#4F46E5;font-weight:600;cursor:pointer;text-decoration:underline;">Sign Up</span>';
+        if (title) title.innerText = 'Login';
+        if (sw) sw.innerHTML = 'Don\'t have an account? <span onclick="toggleAuthForm()" style="color:#1e3a8a;font-weight:600;cursor:pointer;">Sign Up</span>';
     } else {
         lf.classList.add('hidden'); sf.classList.remove('hidden');
         if (title) title.innerText = 'Create Account';
-        if (sw) sw.innerHTML = 'Already have an account? <span onclick="toggleAuthForm()" style="color:#4F46E5;font-weight:600;cursor:pointer;text-decoration:underline;">Login</span>';
+        if (sw) sw.innerHTML = 'Already have an account? <span onclick="toggleAuthForm()" style="color:#1e3a8a;font-weight:600;cursor:pointer;">Login</span>';
     }
 }
 
@@ -462,8 +498,6 @@ function logout() {
     localStorage.removeItem('currentUser');
     var menu = document.getElementById('profile-dropdown');
     if (menu) menu.classList.add('hidden');
-    var pbtn = document.getElementById('profile-btn');
-    if (pbtn) pbtn.classList.add('hidden');
     updateNav();
     showView('home');
 }
@@ -484,8 +518,6 @@ function updateNav() {
     } else {
         if (l) l.classList.remove('hidden');
         if (profileBtn) profileBtn.classList.add('hidden');
-        var menu = document.getElementById('profile-dropdown');
-        if (menu) menu.classList.add('hidden');
     }
 }
 
@@ -500,14 +532,14 @@ async function submitAdmission(e) {
     const course = document.getElementById('adm-course').value;
     try {
         await fetch(API_URL + '/admission', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({name, email, phone, course})
         });
-        alert('✅ Admission submit ho gaya!');
-        if (voiceEnabled) speakUrdu("Mubarak ho! Admission submit ho gaya");
+        alert('Admission submit ho gaya');
         e.target.reset();
         showView('home');
-    } catch(err) { alert('Error!'); }
+    } catch(err) { alert('Error'); }
 }
 
 // ============================================
@@ -527,14 +559,13 @@ function openCourse(id, title) {
     document.getElementById('course-detail').classList.remove('hidden');
     document.getElementById('detail-title').innerText = title;
     document.getElementById('test-area').classList.add('hidden');
-    var videoUrl = VIDEO_LINKS[title] || 'https://youtu.be/dQw4w9WgXcQ';
+    var videoUrl = VIDEO_LINKS[title] || '';
     var videoId = extractYouTubeID(videoUrl);
     var videoBox = document.querySelector('.video-placeholder');
     if (videoBox) {
-        videoBox.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' + videoId + '?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:12px;"></iframe>';
+        videoBox.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' + videoId + '?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:6px;"></iframe>';
         videoBox.style.padding = '0';
         videoBox.style.background = '#000';
-        videoBox.style.overflow = 'hidden';
     }
     if (currentUser && currentUser.role === 'student') updateProgress(id, title, 25);
 }
@@ -543,7 +574,8 @@ async function updateProgress(courseId, courseTitle, percent) {
     if (!currentUser) return;
     try {
         await fetch(API_URL + '/progress', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username: currentUser.username, course_id: courseId, course_title: courseTitle, progress_percent: percent})
         });
     } catch(err) { console.error(err); }
@@ -552,19 +584,13 @@ async function updateProgress(courseId, courseTitle, percent) {
 function hideCourseDetail() {
     document.getElementById('courses-list').classList.remove('hidden');
     document.getElementById('course-detail').classList.add('hidden');
-    var videoBox = document.querySelector('.video-placeholder');
-    if (videoBox) {
-        videoBox.innerHTML = '<span>▶ Video Player</span>';
-        videoBox.style.padding = '';
-        videoBox.style.background = '#1F2937';
-    }
 }
 
-function downloadNotes() { alert('📥 Notes download started!'); }
+function downloadNotes() { alert('Notes download started'); }
 function startTest() { document.getElementById('test-area').classList.remove('hidden'); }
 function submitTest() {
     const s = document.querySelector('input[name="q1"]:checked');
-    alert(s && s.value === 'a' ? '✅ Correct!' : '❌ Wrong');
+    alert(s && s.value === 'a' ? 'Correct!' : 'Wrong');
 }
 
 // ============================================
@@ -583,7 +609,7 @@ async function loadSoftware() {
             card.className = 'card course-card';
             card.innerHTML = '<img src="' + img + '" class="course-image" onerror="this.src=\'https://via.placeholder.com/400x200\'">' +
                 '<div class="course-content"><h3>' + x.name + '</h3>' +
-                '<button class="btn-success" style="width:100%;margin-top:15px;">⬇️ Download</button></div>';
+                '<button class="btn-success" style="width:100%;margin-top:15px;">Download</button></div>';
             card.querySelector('button').onclick = function() {
                 if (x.link && x.link !== '#') window.open(x.link, '_blank');
             };
@@ -602,7 +628,7 @@ async function loadNews() {
         const list = document.getElementById('news-list');
         if (!list) return;
         list.innerHTML = '';
-        c.forEach(function(x) { list.innerHTML += '<div class="news-item">📢 ' + x.text + '</div>'; });
+        c.forEach(function(x) { list.innerHTML += '<div class="news-item">' + x.text + '</div>'; });
     } catch(err) { console.error(err); }
 }
 
@@ -626,35 +652,35 @@ async function loadProgress() {
         if (!box) return;
         box.innerHTML = '';
         if (progress.length === 0) {
-            box.innerHTML = '<p style="color:#6B7280;">Abhi tak koi course shuru nahi kiya. Courses tab kholein!</p>';
+            box.innerHTML = '<p style="color:#6B7280;">Abhi koi course shuru nahi kiya.</p>';
             return;
         }
         progress.forEach(function(p) {
-            box.innerHTML += '<div style="margin-bottom:10px; padding:10px; background:#F9FAFB; border-radius:6px;">' +
+            box.innerHTML += '<div style="margin-bottom:10px; padding:10px; background:#F9FAFB; border-radius:4px;">' +
                 '<div style="font-weight:600;">' + p.course_title + '</div>' +
                 '<div style="background:#E5E7EB; height:8px; border-radius:4px; margin-top:5px;">' +
-                '<div style="background:linear-gradient(90deg,#4F46E5,#7C3AED); width:' + p.progress_percent + '%; height:100%; border-radius:4px;"></div></div>' +
+                '<div style="background:#1e3a8a; width:' + p.progress_percent + '%; height:100%; border-radius:4px;"></div></div>' +
                 '<div style="font-size:0.8rem; color:#6B7280; margin-top:3px;">' + p.progress_percent + '% complete</div></div>';
         });
     } catch(err) { console.error(err); }
 }
 
 async function markAttendance() {
-    if (!currentUser) return alert('Login karein!');
+    if (!currentUser) return alert('Login karein');
     try {
         const r = await fetch(API_URL + '/attendance', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({student_name: currentUser.name})
         });
         const d = await r.json();
         var statusEl = document.getElementById('attendance-status');
         if (statusEl) {
             statusEl.innerText = d.message;
-            statusEl.style.color = d.success ? '#10B981' : '#EF4444';
+            statusEl.style.color = d.success ? '#047857' : '#b91c1c';
             statusEl.style.fontWeight = 'bold';
             statusEl.style.marginTop = '10px';
         }
-        alert(d.message);
     } catch(err) { alert('Error'); }
 }
 
@@ -707,12 +733,12 @@ async function loadManage() {
         const n = await fetch(API_URL + '/news').then(r => r.json());
         const m = document.getElementById('manage-content');
         if (!m) return;
-        m.innerHTML = '<h4 style="color:#4F46E5;">📚 Courses</h4>';
-        c.forEach(function(x) { m.innerHTML += '<div style="padding:6px;background:#f9fafb;border-radius:6px;margin-bottom:6px;font-size:0.85rem;">' + x.title + '<br><button class="btn-primary" style="padding:3px 8px;font-size:0.7rem;margin:4px 4px 0 0;" onclick="editCourse(' + x.id + ')">✏️ Edit</button><button class="btn-danger" style="padding:3px 8px;font-size:0.7rem;margin-top:4px;" onclick="del(\'courses\',' + x.id + ')">🗑️ Delete</button></div>'; });
-        m.innerHTML += '<h4 style="color:#10B981;">💻 Software</h4>';
-        s.forEach(function(x) { m.innerHTML += '<div style="padding:6px;background:#f9fafb;border-radius:6px;margin-bottom:6px;font-size:0.85rem;">' + x.name + '<br><button class="btn-primary" style="padding:3px 8px;font-size:0.7rem;margin:4px 4px 0 0;" onclick="editSoftware(' + x.id + ')">✏️ Edit</button><button class="btn-danger" style="padding:3px 8px;font-size:0.7rem;margin-top:4px;" onclick="del(\'software\',' + x.id + ')">🗑️ Delete</button></div>'; });
-        m.innerHTML += '<h4 style="color:#EF4444;">📢 News</h4>';
-        n.forEach(function(x) { m.innerHTML += '<div style="padding:6px;background:#f9fafb;border-radius:6px;margin-bottom:6px;font-size:0.85rem;">' + x.text.substring(0, 30) + '...<br><button class="btn-danger" style="padding:3px 8px;font-size:0.7rem;" onclick="del(\'news\',' + x.id + ')">🗑️ Delete</button></div>'; });
+        m.innerHTML = '<h4 style="color:#1e3a8a;">Courses</h4>';
+        c.forEach(function(x) { m.innerHTML += '<div style="padding:6px;background:#f9fafb;border-radius:4px;margin-bottom:6px;font-size:0.85rem;">' + x.title + '<br><button class="btn-primary" style="padding:3px 8px;font-size:0.7rem;margin:4px 4px 0 0;" onclick="editCourse(' + x.id + ')">Edit</button><button class="btn-danger" style="padding:3px 8px;font-size:0.7rem;margin-top:4px;" onclick="del(\'courses\',' + x.id + ')">Delete</button></div>'; });
+        m.innerHTML += '<h4 style="color:#047857;">Software</h4>';
+        s.forEach(function(x) { m.innerHTML += '<div style="padding:6px;background:#f9fafb;border-radius:4px;margin-bottom:6px;font-size:0.85rem;">' + x.name + '<br><button class="btn-danger" style="padding:3px 8px;font-size:0.7rem;margin-top:4px;" onclick="del(\'software\',' + x.id + ')">Delete</button></div>'; });
+        m.innerHTML += '<h4 style="color:#b91c1c;">News</h4>';
+        n.forEach(function(x) { m.innerHTML += '<div style="padding:6px;background:#f9fafb;border-radius:4px;margin-bottom:6px;font-size:0.85rem;">' + x.text.substring(0, 30) + '...<br><button class="btn-danger" style="padding:3px 8px;font-size:0.7rem;" onclick="del(\'news\',' + x.id + ')">Delete</button></div>'; });
     } catch(err) { console.error(err); }
 }
 
@@ -727,17 +753,6 @@ async function editCourse(id) {
     loadManage();
 }
 
-async function editSoftware(id) {
-    const s = await fetch(API_URL + '/software').then(r => r.json());
-    const x = s.find(i => i.id === id);
-    if (!x) return;
-    const n = prompt('Name:', x.name); if (n === null) return;
-    const l = prompt('Link:', x.link || ''); if (l === null) return;
-    const img = prompt('Image:', x.image || ''); if (img === null) return;
-    await fetch(API_URL + '/software/' + id, {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name: n, link: l, image: img})});
-    loadManage();
-}
-
 async function del(type, id) {
     if (!confirm('Delete?')) return;
     await fetch(API_URL + '/' + type + '/' + id, {method: 'DELETE'});
@@ -745,7 +760,7 @@ async function del(type, id) {
 }
 
 // ============================================
-//   SECURITY PANEL
+//   SECURITY
 // ============================================
 async function loadSecurityPanel() {
     try {
@@ -755,39 +770,7 @@ async function loadSecurityPanel() {
         el = document.getElementById('stat-blocked'); if (el) el.innerText = stats.blocked_ips || 0;
         el = document.getElementById('stat-today'); if (el) el.innerText = stats.attacks_today || 0;
         el = document.getElementById('stat-logins'); if (el) el.innerText = stats.failed_logins_today || 0;
-        el = document.getElementById('notif-badge'); if (el) el.innerText = stats.unread_notifications || 0;
-        const notifs = await fetch(API_URL + '/security/notifications').then(r => r.json());
-        const list = document.getElementById('notifications-list');
-        if (!list) return;
-        list.innerHTML = '';
-        if (notifs.length === 0) {
-            list.innerHTML = '<p style="color:#6B7280;text-align:center;padding:20px;">✅ Koi attack nahi. Website secure hai!</p>';
-        } else {
-            notifs.forEach(function(n) {
-                list.innerHTML += '<div style="padding:10px;background:#FEE2E2;border-left:4px solid #DC2626;border-radius:0 6px 6px 0;margin-bottom:8px;">' +
-                    '<div style="font-weight:600;font-size:0.9rem;">' + n.title + '</div>' +
-                    '<div style="font-size:0.8rem;color:#6B7280;margin-top:4px;">' + n.message + '</div>' +
-                    '<div style="font-size:0.7rem;color:#9CA3AF;margin-top:4px;">' + n.timestamp + '</div></div>';
-            });
-        }
     } catch(err) { console.error(err); }
-}
-
-async function markAllRead() {
-    await fetch(API_URL + '/security/notifications/read', {method: 'POST'});
-    loadSecurityPanel();
-    alert('✅ Sab read!');
-}
-
-async function loadBlockedIPs() {
-    const blocked = await fetch(API_URL + '/security/blocked').then(r => r.json());
-    if (blocked.length === 0) { alert('✅ Koi IP blocked nahi.'); return; }
-    let msg = '🚫 Blocked IPs:\n\n';
-    blocked.forEach(function(ip, i) { msg += (i+1) + '. ' + ip.ip + '\n'; });
-    if (confirm(msg + '\nSab unblock karein?')) {
-        for (const ip of blocked) await fetch(API_URL + '/security/blocked/' + ip.id, {method: 'DELETE'});
-        loadSecurityPanel();
-    }
 }
 
 // ============================================
@@ -817,57 +800,85 @@ async function sendChat(role) {
 }
 
 // ============================================
-//   AI CHAT
+//   AI CHAT - POWERFUL
 // ============================================
-function toggleAI() { document.getElementById('ai-chat-container').classList.toggle('hidden'); }
+function toggleAI() {
+    document.getElementById('ai-chat-container').classList.toggle('hidden');
+}
+
 function handleAIKeyPress(e) { if (e.key === 'Enter') sendAIMessage(); }
 
 async function sendAIMessage() {
     const input = document.getElementById('ai-input');
     const msg = input.value.trim();
     if (!msg) return;
+    
     addAI('user', msg);
     input.value = '';
+    
+    // Typing indicator
+    addAI('bot', '<i style="color:#9ca3af;">Soch raha hoon...</i>', 'thinking');
+    
     try {
+        // Try Gemini first
         let r = await fetch(API_URL + '/ai/smart', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({message: msg})
         });
         let d = await r.json();
-        let response = d.response;
-        if (!response || response === 'undefined') {
+        
+        removeThinking();
+        
+        // If empty, try keyword AI
+        if (!d || !d.response || d.response === 'undefined' || d.response.trim() === '') {
             r = await fetch(API_URL + '/ai', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message: msg})
             });
             d = await r.json();
-            response = d.response || 'Maazrat!';
         }
-        addAI('bot', response);
-    } catch(err) { addAI('bot', 'Server se connect nahi ho raha.'); }
+        
+        const finalResp = (d && d.response) ? d.response : 'Maazrat! Dobara try karein.';
+        addAI('bot', finalResp);
+        
+        if (d && d.source) console.log('AI source:', d.source);
+    } catch(err) {
+        removeThinking();
+        console.error('AI error:', err);
+        addAI('bot', 'Server se connect nahi ho raha.');
+    }
 }
 
-function addAI(sender, text) {
+function removeThinking() {
+    const box = document.getElementById('ai-messages');
+    const t = box.querySelector('[data-thinking="true"]');
+    if (t) t.remove();
+}
+
+function addAI(sender, text, id) {
     const box = document.getElementById('ai-messages');
     const div = document.createElement('div');
     div.className = 'ai-msg ' + sender;
+    if (id === 'thinking') div.setAttribute('data-thinking', 'true');
     div.innerHTML = text;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 }
 
 // ============================================
-//   AUTO REFRESH
+//   AUTO REFRESH CHAT
 // ============================================
 setInterval(function() {
     if (!currentUser) return;
     if (currentUser.role === 'student') {
         const d = document.getElementById('student-dashboard');
-        if (d && d.style.display === 'block') loadChats('student-chat-box');
+        if (d && d.classList.contains('active')) loadChats('student-chat-box');
     }
     if (currentUser.role === 'teacher') {
         const d = document.getElementById('teacher-dashboard');
-        if (d && d.style.display === 'block') loadChats('teacher-chat-box');
+        if (d && d.classList.contains('active')) loadChats('teacher-chat-box');
     }
 }, 3000);
 
@@ -875,16 +886,27 @@ setInterval(function() {
 //   INITIALIZE
 // ============================================
 window.addEventListener('load', function() {
-    console.log('✅ Script loaded!');
+    console.log('Script loaded');
     loadVoices();
     updateNav();
-    if (currentUser) {
-        showView(currentUser.role + '-dashboard');
-    } else {
-        showView('home');
+    
+    // Check reset token
+    const token = new URLSearchParams(window.location.search).get('token');
+    if (token) {
+        fetch(API_URL + '/verify-reset-token', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({token})
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) showView('reset');
+            else { alert('Link galat ya expire'); showView('login'); }
+        })
+        .catch(() => showView('login'));
+        return;
     }
+    
+    if (currentUser) showView(currentUser.role + '-dashboard');
+    else showView('home');
 });
-
-document.addEventListener('click', () => {
-        if (!voicesLoaded) loadVoices();
-} )
