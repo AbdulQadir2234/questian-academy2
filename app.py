@@ -29,9 +29,9 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 USE_POSTGRES = bool(DATABASE_URL)
 
 if USE_POSTGRES:
-    import psycopg2
-    import psycopg2.extras
-    print("Using PostgreSQL")
+    import psycopg
+    import psycopg.rows
+    print("Using PostgreSQL (psycopg3)")
 else:
     import sqlite3
     print("Using SQLite (local)")
@@ -40,20 +40,16 @@ else:
 class DB:
     def __init__(self):
         if USE_POSTGRES:
-            self.conn = psycopg2.connect(DATABASE_URL)
-            self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            self.conn = psycopg.connect(DATABASE_URL)
+            self.cur = self.conn.cursor(row_factory=psycopg.rows.dict_row)
         else:
             self.conn = sqlite3.connect('academy.db')
             self.conn.row_factory = sqlite3.Row
             self.cur = self.conn.cursor()
 
-    def execute(self, query, params=None):
-        # Convert ? to %s for PostgreSQL
-        if USE_POSTGRES:
-            query = query.replace('?', '%s')
-            # Replace AUTOINCREMENT with SERIAL
-            query = query.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
-            # Replace INSERT OR IGNORE with ON CONFLICT
+        def execute(self, query, params=None):
+         if USE_POSTGRES:
+               query = query.replace('?', '%s')
         if params:
             self.cur.execute(query, params)
         else:
