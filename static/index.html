@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#4F46E5">
     <title>Questian Academy - AI LMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
@@ -217,10 +218,9 @@
     </div>
 </div>
 
-<!-- LOGIN VIEW -->
-<div class="container" id="login-view">
+     <div class="container" id="login-view">
     <div class="login-card">
-        <h2 id="auth-title">Login Portal</h2>
+        <h2 id="auth-title">Login</h2>
         <form id="login-form" onsubmit="handleLogin(event)">
             <input type="text" id="login-user" placeholder="Username" required>
             <input type="password" id="login-pass" placeholder="Password" required>
@@ -235,11 +235,11 @@
                 <option value="student">Student</option>
                 <option value="teacher">Teacher (Approved Email Only)</option>
             </select>
-            <p id="teacher-note" style="display:none; color:#DC2626; font-size:0.8rem; margin-top:5px;">⚠️ Teacher account ke liye approved email zaroori hai</p>
-            <button type="submit" class="btn-success full-width">Create Account</button>
+            <p id="teacher-note" style="display:none; color:#b91c1c; font-size:0.8rem; margin-top:5px;">Teacher account ke liye approved email zaroori hai</p>
+            <button type="submit" class="btn-success full-width">Send Verification Code</button>
         </form>
-        <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#4F46E5;font-weight:600;cursor:pointer;text-decoration:underline;">Sign Up</span></p>
-        <p class="demo-text">Demo: student/123</p>
+        <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#1e3a8a;font-weight:600;cursor:pointer;">Sign Up</span></p>
+        <p class="demo-text">Demo Student: student / 123</p>
     </div>
 </div>
 

@@ -270,31 +270,8 @@ function openPayment() { document.getElementById('profile-dropdown').classList.a
 function openCertificate() { document.getElementById('profile-dropdown').classList.add('hidden'); alert('🎓 Certificate system abhi kaam kar raha hai.'); }
 
 // ============================================
-//   LOGIN / SIGNUP
+//   SIGNUP WITH EMAIL OTP
 // ============================================
-async function handleLogin(e) {
-    e.preventDefault();
-    stopVoice();
-    const u = document.getElementById('login-user').value.trim();
-    const p = document.getElementById('login-pass').value.trim();
-    if (!u || !p) return alert('Username aur password daalein!');
-    try {
-        const r = await fetch(API_URL + '/login', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username: u, password: p})
-        });
-        const d = await r.json();
-        if (d.success) {
-            currentUser = d.user;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            updateNav();
-            document.getElementById('login-form').reset();
-            document.getElementById('signup-form').reset();
-            showView(currentUser.role + '-dashboard');
-        } else { alert('❌ ' + (d.message || 'Galat credentials!')); }
-    } catch(err) { alert('Server error!'); }
-}
-
 async function handleSignup(e) {
     e.preventDefault();
     const name = document.getElementById('signup-name').value.trim();
@@ -303,38 +280,157 @@ async function handleSignup(e) {
     const password = document.getElementById('signup-pass').value.trim();
     const role = document.getElementById('signup-role').value;
 
-    if (!name || !username || !email || !password) {
-        return alert('Sab fields bharein!');
-    }
-
-    if (password.length < 3) {
-        return alert('Password kam se kam 3 characters ka ho!');
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return alert('Email sahi format mein likhein!');
-    }
+    if (!name || !username || !email || !password) return alert('Saare fields bharein');
+    if (password.length < 3) return alert('Password 3+ characters');
 
     try {
-        const r = await fetch(API_URL + '/signup', {
+        const r = await fetch(API_URL + '/signup/send-otp', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({name, username, email, password, role})
         });
         const d = await r.json();
-        if (d.success) {
-            alert('✅ ' + d.message + '\n\nAb login karein: ' + username);
-            document.getElementById('signup-form').reset();
-            toggleAuthForm();
-        } else {
-            alert('❌ ' + d.message);
-        }
+        
+        if (!d.success) return alert('❌ ' + d.message);
+        
+        window.pendingSignup = {name, username, email, password, role};
+        alert('✅ ' + d.message + '\n\nApna email check karein.');
+        showOtpScreen('signup', email);
     } catch(err) {
-        alert('Server error! Dobara try karein.');
+        alert('Server error');
         console.error(err);
     }
 }
+
+function onRoleChange() {
+    const role = document.getElementById('signup-role').value;
+    const note = document.getElementById('teacher-note');
+    if (note) note.style.display = role === 'teacher' ? 'block' : 'none';
+}
+
+// ============================================
+//   LOGIN WITH EMAIL OTP
+// ============================================
+async function handleLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('login-user').value.trim();
+    const password = document.getElementById('login-pass').value.trim();
+    if (!username || !password) return alert('Username aur password daalein');
+
+    try {
+        const r = await fetch(API_URL + '/login/send-otp', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password})
+        });
+        const d = await r.json();
+        
+        if (!d.success) return alert('❌ ' + d.message);
+        
+        alert('✅ ' + d.message + '\n\nEmail check karein: ' + (d.email || ''));
+        showOtpScreen('login', '');
+    } catch(err) {
+        alert('Server error');
+        console.error(err);
+    }
+}
+
+// ============================================
+//   OTP VERIFICATION
+// ============================================
+function showOtpScreen(purpose, email) {
+    document.getElementById('login-view').style.display = 'none';
+    const container = document.getElementById('login-view');
+    container.classList.remove('active');
+    
+    let otpSection = document.getElementById('otp-view');
+    if (!otpSection) {
+        otpSection = document.createElement('div');
+        otpSection.id = 'otp-view';
+        otpSection.className = 'container';
+        document.body.insertBefore(otpSection, document.querySelector('.main-footer'));
+    }
+    
+    otpSection.style.display = 'block';
+    otpSection.classList.add('active');
+    
+    const title = purpose === 'signup' ? 'Verify Email' : 'Login Verification';
+    const info = purpose === 'signup' 
+        ? 'Aapke email par 6-digit code bheja gaya hai. Signup complete karne ke liye code daalein.'
+        : 'Aapke email par 6-digit code bheja gaya hai. Login complete karne ke liye code daalein.';
+    
+    otpSection.innerHTML = `
+        <div class="otp-container">
+            <h2>${title}</h2>
+            <p class="otp-info">${info}</p>
+            <input type="text" id="otp-input" placeholder="Enter 6-digit code" maxlength="6" 
+                   style="text-align:center; font-size:1.5rem; letter-spacing:8px; font-weight:600;">
+            <button onclick="verifyOtp('${purpose}')" class="btn-primary full-width">Verify</button>
+            <p class="otp-link" onclick="cancelOtp()">← Cancel</p>
+        </div>
+    `;
+    
+    setTimeout(() => document.getElementById('otp-input').focus(), 200);
+}
+
+function cancelOtp() {
+    const otpSection = document.getElementById('otp-view');
+    if (otpSection) {
+        otpSection.style.display = 'none';
+        otpSection.classList.remove('active');
+    }
+    document.getElementById('login-view').classList.add('active');
+    document.getElementById('login-view').style.display = 'block';
+}
+
+async function verifyOtp(purpose) {
+    const code = document.getElementById('otp-input').value.trim();
+    if (!code || code.length !== 6) return alert('6-digit code daalein');
+    
+    const url = purpose === 'signup' ? '/signup/verify' : '/login/verify';
+    let body;
+    
+    if (purpose === 'signup') {
+        body = {email: window.pendingSignup.email, code};
+    } else {
+        body = {email: window.pendingLoginEmail || '', code};
+    }
+    
+    // Get login email from server response
+    if (purpose === 'login' && !body.email) {
+        // Retry: use any stored value
+        alert('Session error. Dobara try karein.');
+        cancelOtp();
+        return;
+    }
+    
+    try {
+        const r = await fetch(API_URL + url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+        const d = await r.json();
+        
+        if (!d.success) return alert('❌ ' + d.message);
+        
+        // Success
+        currentUser = d.user;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        cancelOtp();
+        document.getElementById('login-view').classList.add('active');
+        document.getElementById('login-view').style.display = 'block';
+        
+        updateNav();
+        showView(currentUser.role + '-dashboard');
+        alert('✅ Login successful. Welcome ' + currentUser.name);
+    } catch(err) {
+        alert('Verify error: ' + err.message);
+    }
+}
+
+
 
 function onRoleChange() {
     const role = document.getElementById('signup-role').value;
