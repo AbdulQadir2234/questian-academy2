@@ -218,13 +218,17 @@
     </div>
 </div>
 
-     <div class="container" id="login-view">
+<!-- LOGIN VIEW -->
+<div class="container" id="login-view">
     <div class="login-card">
         <h2 id="auth-title">Login</h2>
         <form id="login-form" onsubmit="handleLogin(event)">
             <input type="text" id="login-user" placeholder="Username" required>
             <input type="password" id="login-pass" placeholder="Password" required>
             <button type="submit" class="btn-primary full-width">Login</button>
+            <p style="text-align:center; margin-top:12px; font-size:0.85rem;">
+                <span onclick="showForgotPassword()" style="color:#3b82f6; font-weight:600; cursor:pointer; text-decoration:underline;">Forgot Password?</span>
+            </p>
         </form>
         <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
             <input type="text" id="signup-name" placeholder="Full Name" required>
@@ -235,11 +239,42 @@
                 <option value="student">Student</option>
                 <option value="teacher">Teacher (Approved Email Only)</option>
             </select>
-            <p id="teacher-note" style="display:none; color:#b91c1c; font-size:0.8rem; margin-top:5px;">Teacher account ke liye approved email zaroori hai</p>
+            <p id="teacher-note" style="display:none; color:#ef4444; font-size:0.8rem; margin-top:5px;">Teacher account ke liye approved email zaroori hai</p>
             <button type="submit" class="btn-success full-width">Send Verification Code</button>
         </form>
-        <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#1e3a8a;font-weight:600;cursor:pointer;">Sign Up</span></p>
+        <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#3b82f6;font-weight:600;cursor:pointer;">Sign Up</span></p>
         <p class="demo-text">Demo Student: student / 123</p>
+    </div>
+</div>
+
+<!-- FORGOT PASSWORD VIEW -->
+<div class="container" id="forgot-view">
+    <div class="login-card">
+        <h2>Forgot Password</h2>
+        <p class="subtitle" style="text-align:center;">Apna registered email daalein — reset link bhejenge.</p>
+        <form onsubmit="handleForgotPassword(event)">
+            <input type="email" id="forgot-email" placeholder="Your Email Address" required>
+            <button type="submit" class="btn-primary full-width">Send Reset Link</button>
+        </form>
+        <p class="demo-text" style="text-align:center; margin-top:15px;">
+            <span onclick="showView('login')" style="color:#3b82f6; font-weight:600; cursor:pointer;">← Back to Login</span>
+        </p>
+    </div>
+</div>
+
+<!-- RESET PASSWORD VIEW -->
+<div class="container" id="reset-view">
+    <div class="login-card">
+        <h2>Reset Password</h2>
+        <p class="subtitle" style="text-align:center;">Naya password daalein.</p>
+        <form onsubmit="handleResetPassword(event)">
+            <input type="password" id="reset-password" placeholder="New Password" required minlength="3">
+            <input type="password" id="reset-confirm" placeholder="Confirm New Password" required minlength="3">
+            <button type="submit" class="btn-primary full-width">Reset Password</button>
+        </form>
+        <p class="demo-text" style="text-align:center; margin-top:15px;">
+            <span onclick="showView('login')" style="color:#3b82f6; font-weight:600; cursor:pointer;">← Back to Login</span>
+        </p>
     </div>
 </div>
 
