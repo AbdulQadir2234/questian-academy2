@@ -39,22 +39,19 @@ else:
 
 class DB:
     def __init__(self):
-        if USE_POSTGRES:
-            self.conn = psycopg.connect(DATABASE_URL)
-            self.cur = self.conn.cursor(row_factory=psycopg.rows.dict_row)
-        else:
-            self.conn = sqlite3.connect('academy.db')
-            self.conn.row_factory = sqlite3.Row
-            self.cur = self.conn.cursor()
-
-        def execute(self, query, params=None):
-         if USE_POSTGRES:
-               query = query.replace('?', '%s')
-        if params:
-            self.cur.execute(query, params)
-        else:
-            self.cur.execute(query)
-        return self.cur
+        self.conn = None
+        self.cur = None
+        try:
+            if USE_POSTGRES:
+                self.conn = psycopg.connect(DATABASE_URL, connect_timeout=30)
+                self.cur = self.conn.cursor(row_factory=psycopg.rows.dict_row)
+            else:
+                self.conn = sqlite3.connect('academy.db', timeout=30)
+                self.conn.row_factory = sqlite3.Row
+                self.cur = self.conn.cursor()
+        except Exception as e:
+            print(f"DB connection error: {e}")
+            raise
 
     def fetchone(self):
         row = self.cur.fetchone()
@@ -293,8 +290,13 @@ def init_db():
     db.close()
 
 
-init_db()
-print("Database initialized")
+# Only run init_db if file doesn't exist (or on first run)
+if not os.path.exists('academy.db') or USE_POSTGRES:
+    try:
+        init_db()
+        print("Database initialized")
+    except Exception as e:
+        print(f"DB init error: {e}")
 
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY')
 EMAIL_USER = os.environ.get('EMAIL_USER')
