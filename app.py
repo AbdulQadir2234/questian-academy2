@@ -25,7 +25,7 @@ CORS(app, origins=['*'])
 # ============================================
 #   DATABASE - PostgreSQL / SQLite
 # ============================================
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = None
 USE_POSTGRES = bool(DATABASE_URL)
 
 if USE_POSTGRES:
