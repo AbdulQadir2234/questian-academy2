@@ -1,8 +1,4 @@
-"""
-QUESTIAN ACADEMY - Backend
-Developer: Abdul Qadir Soomro
-Database: PostgreSQL (Railway) / SQLite (Local)
-"""
+
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -22,9 +18,8 @@ app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'questian-secret-2026')
 CORS(app, origins=['*'])
 
-# ============================================
-#   DATABASE - PostgreSQL / SQLite
-# ============================================
+
+
 DATABASE_URL = os.environ.get('DATABASE_URL')
 USE_POSTGRES = bool(DATABASE_URL)
 

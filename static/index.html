@@ -3,19 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#0f172a">
     <title>Questian Academy - AI LMS</title>
-    <!-- Inter Font for Claude/Apple feel -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=25">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=50">
 </head>
 <body>
-
-    <!-- 🎯 3D BACKGROUND BOOK -->
-    <div id="bg-3d-container">
-        <div class="bg-book"></div>
-    </div>
-    <div id="bg-overlay"></div>
 
     <!-- NAVBAR -->
     <nav>
@@ -40,7 +32,6 @@
                 <div class="profile-divider"></div>
                 <a class="profile-item" onclick="openDashboard()"><span>📊</span> Dashboard</a>
                 <a class="profile-item" onclick="openSettings()"><span>⚙️</span> Settings</a>
-                <a class="profile-item" onclick="openPayment()"><span>💳</span> Payment</a>
                 <a class="profile-item" onclick="openCertificate()"><span>🎓</span> Certificate</a>
                 <div class="profile-divider"></div>
                 <a class="profile-item profile-logout" onclick="logout()"><span>🚪</span> Logout</a>
@@ -54,8 +45,8 @@
             <h1>Welcome to the Future of Learning</h1>
             <p>Pakistan's leading AI-powered online education platform. Yahan aap admission le sakte hain, video courses dekh sakte hain, software download kar sakte hain aur MCQ tests de sakte hain.</p>
             <div class="hero-buttons">
-                <button onclick="showView('admission')" class="btn-primary">Apply Now</button>
-                <button onclick="showView('courses')" class="btn-secondary">View Courses</button>
+                <button onclick="showView('admission')" class="btn-primary">🎓 Apply Now</button>
+                <button onclick="showView('courses')" class="btn-secondary">📚 View Courses</button>
             </div>
         </div>
 
@@ -63,7 +54,7 @@
             <div class="stat-box"><div class="stat-number" data-target="500">0</div><div class="stat-label">Students</div></div>
             <div class="stat-box"><div class="stat-number" data-target="12">0</div><div class="stat-label">Courses</div></div>
             <div class="stat-box"><div class="stat-number" data-target="24">0</div><div class="stat-label">Support Hours</div></div>
-            <div class="stat-box"><div class="stat-number" data-target="5">0</div><div class="stat-label">Rating</div></div>
+            <div class="stat-box"><div class="stat-number" data-target="5">0</div><div class="stat-label">★ Rating</div></div>
         </div>
 
         <div class="testimonials-section">
@@ -98,8 +89,8 @@
         <h2>Admission Form</h2>
         <p class="subtitle">Fill out the form below to enroll in our courses.</p>
         <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-            <button id="voice-guide-btn" onclick="admissionVoiceGuide()" style="background:linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%); color:white; padding:12px 22px; border-radius:25px; font-size:0.95rem; min-height:auto; border:none; cursor:pointer; display:flex; align-items:center; gap:8px;">🎙️ Guide Sunein (Urdu)</button>
-            <button id="voice-toggle-btn" onclick="toggleVoice()" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); padding:12px 18px; border-radius:25px; font-size:1.1rem; min-height:auto; cursor:pointer; font-weight:600;">🔊 ON</button>
+            <button id="voice-guide-btn" onclick="admissionVoiceGuide()" style="background:linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%); color:white; padding:12px 22px; border-radius:25px; font-size:0.95rem; min-height:auto; border:none; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🎙️ Guide Sunein (Urdu)</button>
+            <button id="voice-toggle-btn" onclick="toggleVoice()" style="background:#E0E7FF; color:#4F46E5; padding:12px 18px; border-radius:25px; font-size:1.1rem; min-height:auto; border:none; cursor:pointer; font-weight:600;">🔊 ON</button>
         </div>
         <form onsubmit="submitAdmission(event)" class="styled-form">
             <div class="form-group"><label>Full Name</label><input type="text" id="adm-name" placeholder="Enter your name" required onfocus="admissionFieldGuide('name')"></div>
@@ -178,7 +169,7 @@
             <h2>About Us</h2>
             <div class="about-underline"></div>
             <p>Questian Academy ek online learning platform hai jahan aap modern technology skills seekh sakte hain. Yahan aap Web Development, Cyber Security, Artificial Intelligence, Machine Learning, aur programming languages ki courses kar sakte hain.</p>
-            <p>Hamara maqsad hai ke Pakistan aur duniya bhar ke students ko affordable aur quality education mile. Har course mein video lectures, notes, aur MCQ tests shamil hain. Hamara AI assistant 24/7 aapki madad ke liye available hai.</p>
+            <p>Hamara maqsad hai ke Pakistan aur duniya bhar ke students ko affordable aur quality education mile. Har course mein video lectures, notes, aur MCQ tests shamil hain. Hamara AI assistant 24/7 aapki madad ke liye available hai — Urdu aur English dono mein.</p>
         </div>
 
         <div class="about-section">
@@ -192,6 +183,7 @@
                 <li>🤖 <strong>AI Assistant</strong> — 24/7 sawalon ke jawab</li>
                 <li>💬 <strong>Teacher Chat</strong> — Direct teachers se baat karein</li>
                 <li>📊 <strong>Progress Tracking</strong> — Apni learning track karein</li>
+                <li>🛡️ <strong>Secure Platform</strong> — Attack protection ke saath</li>
             </ul>
         </div>
 
@@ -228,13 +220,13 @@
     <!-- LOGIN VIEW -->
     <div class="container" id="login-view">
         <div class="login-card">
-            <h2 id="auth-title">Login</h2>
+            <h2 id="auth-title">Login Portal</h2>
             <form id="login-form" onsubmit="handleLogin(event)">
                 <input type="text" id="login-user" placeholder="Username" required>
                 <input type="password" id="login-pass" placeholder="Password" required>
                 <button type="submit" class="btn-primary full-width">Login</button>
                 <p style="text-align:center; margin-top:12px; font-size:0.85rem;">
-                    <span onclick="showForgotPassword()" style="color:#a5b4fc; font-weight:600; cursor:pointer; text-decoration:underline;">Forgot Password?</span>
+                    <span onclick="showForgotPassword()" style="color:#4F46E5; font-weight:600; cursor:pointer; text-decoration:underline;">Forgot Password?</span>
                 </p>
             </form>
             <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
@@ -242,19 +234,17 @@
                 <input type="text" id="signup-user" placeholder="Username" required>
                 <input type="email" id="signup-email" placeholder="Email Address" required>
                 <input type="password" id="signup-pass" placeholder="Password (min 3 chars)" required>
-                <select id="signup-role" onchange="onRoleChange()">
+                <select id="signup-role">
                     <option value="student">Student</option>
                     <option value="teacher">Teacher (Approved Email Only)</option>
                 </select>
-                <p id="teacher-note" style="display:none; color:#ef4444; font-size:0.8rem; margin-top:5px;">Teacher account ke liye approved email zaroori hai</p>
                 <button type="submit" class="btn-success full-width">Send Verification Code</button>
             </form>
-            <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#a5b4fc;font-weight:600;cursor:pointer;">Sign Up</span></p>
-            <p class="demo-text">Demo Student: student / 123</p>
+            <p class="demo-text" id="auth-switch">Don't have an account? <span onclick="toggleAuthForm()" style="color:#4F46E5;font-weight:600;cursor:pointer;text-decoration:underline;">Sign Up</span></p>
+            <p class="demo-text">Demo: student/123</p>
         </div>
     </div>
 
-    <!-- FORGOT PASSWORD VIEW -->
     <div class="container" id="forgot-view">
         <div class="login-card">
             <h2>Forgot Password</h2>
@@ -264,12 +254,11 @@
                 <button type="submit" class="btn-primary full-width">Send Reset Link</button>
             </form>
             <p class="demo-text" style="text-align:center; margin-top:15px;">
-                <span onclick="showView('login')" style="color:#a5b4fc; font-weight:600; cursor:pointer;">← Back to Login</span>
+                <span onclick="showView('login')" style="color:#4F46E5; font-weight:600; cursor:pointer;">← Back to Login</span>
             </p>
         </div>
     </div>
 
-    <!-- RESET PASSWORD VIEW -->
     <div class="container" id="reset-view">
         <div class="login-card">
             <h2>Reset Password</h2>
@@ -280,7 +269,7 @@
                 <button type="submit" class="btn-primary full-width">Reset Password</button>
             </form>
             <p class="demo-text" style="text-align:center; margin-top:15px;">
-                <span onclick="showView('login')" style="color:#a5b4fc; font-weight:600; cursor:pointer;">← Back to Login</span>
+                <span onclick="showView('login')" style="color:#4F46E5; font-weight:600; cursor:pointer;">← Back to Login</span>
             </p>
         </div>
     </div>
@@ -306,16 +295,17 @@
             <div class="card"><h3>👨‍🎓 Student Activity</h3><ul class="activity-list"><li>Student1 - Attended Class ✅</li><li>Student2 - Missed Class ❌</li></ul></div>
             <div class="card"><h3>💬 Student Chats</h3><div class="chat-box" id="teacher-chat-box"></div><div class="chat-input-group"><input type="text" id="teacher-msg" placeholder="Reply..."><button onclick="sendChat('teacher')">Reply</button></div></div>
             <div class="card"><h3>⚙️ Manage Content</h3><div id="manage-content"></div></div>
-            <div class="card" style="border: 1px solid rgba(239, 68, 68, 0.4);">
+            <div class="card" style="border: 2px solid #EF4444;">
                 <h3>🛡️ Security Center</h3>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:15px;">
-                    <div style="background:rgba(239, 68, 68, 0.1); padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#EF4444;" id="stat-attacks">0</div><div style="font-size:0.75rem; color:#9CA3AF;">Total Attacks</div></div>
-                    <div style="background:rgba(245, 158, 11, 0.1); padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#F59E0B;" id="stat-blocked">0</div><div style="font-size:0.75rem; color:#9CA3AF;">Blocked IPs</div></div>
-                    <div style="background:rgba(59, 130, 246, 0.1); padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#3B82F6;" id="stat-today">0</div><div style="font-size:0.75rem; color:#9CA3AF;">Today Attacks</div></div>
-                    <div style="background:rgba(236, 72, 153, 0.1); padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#EC4899;" id="stat-logins">0</div><div style="font-size:0.75rem; color:#9CA3AF;">Failed Logins</div></div>
+                    <div style="background:#FEE2E2; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#DC2626;" id="stat-attacks">0</div><div style="font-size:0.75rem; color:#991B1B;">Total Attacks</div></div>
+                    <div style="background:#FEF3C7; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#D97706;" id="stat-blocked">0</div><div style="font-size:0.75rem; color:#92400E;">Blocked IPs</div></div>
+                    <div style="background:#DBEAFE; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#2563EB;" id="stat-today">0</div><div style="font-size:0.75rem; color:#1E40AF;">Today Attacks</div></div>
+                    <div style="background:#FCE7F3; padding:8px; border-radius:6px; text-align:center;"><div style="font-size:1.4rem; font-weight:700; color:#DB2777;" id="stat-logins">0</div><div style="font-size:0.75rem; color:#9D174D;">Failed Logins</div></div>
                 </div>
                 <button onclick="loadSecurityPanel()" class="btn-primary" style="width:100%;">🔄 Refresh</button>
             </div>
+            <div class="card" style="border: 2px solid #F59E0B; grid-column: 1 / -1;"><h3>🔔 Notifications <span id="notif-badge" style="background:#DC2626; color:white; padding:2px 10px; border-radius:12px; font-size:0.8rem;">0</span></h3><div id="notifications-list" style="max-height:300px; overflow-y:auto; margin-top:10px;"></div></div>
         </div>
     </div>
 
@@ -376,6 +366,6 @@
     <!-- WHATSAPP BUTTON -->
     <a href="https://wa.me/923359996428?text=Assalam%20o%20Alaikum%20Questian%20Academy" target="_blank" class="whatsapp-btn" title="WhatsApp Support"><span>💬</span></a>
 
-    <script src="script.js?v=25"></script>
+    <script src="script.js?v=50"></script>
 </body>
 </html>
